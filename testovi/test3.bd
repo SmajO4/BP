@@ -1,0 +1,198 @@
+9.11.2017 A
+
+U bazi podataka PREVOZ nalaze se relacije.
+
+VOZAC                                                               TERET
+  sif_vozac   INT       (sifra vozaca)                                sif_teret   SMALLINT    (sifra tereta)
+  prez_vozac  CHAR      (prezime vozaca)                              naz_teret   CHAR        (naziv tereta)
+  ime_vozac   CHAR      (ime vozaca)                                  tezina      SMALLINT    (tezina tereta u tonama)
+
+VOZNJA                                                              VOZILO 
+  sif_voznja  INT       (sifra voznje)                                regbr       CHAR    (registarski broj vozila)
+  sif_vozac   INT       (sifra vozaca)                                tip         CHAR    (tip vozila)
+  sif_teret   SMALLINT  (sifra tereta)                                nosivost    DECIMAL (nosivost vozila u tonama)
+  datum       DATE      (datum obavljanja prevoza)
+  regbr       CHAR      (registarski broj vozila)                   LOKACIJA 
+  broj_km     SMALLINT  (broj predjenih (prevezenih) kilometara)      sif_lok     INT     (sifra lokacije)
+  sif_lok_od  INT       (sifra lokacije od koje se prevozi teret)     naz_lok     CHAR    (naziv lokacije)
+  sif_lok_do  INT       (sifra lokacije do koje se prevozi teret)     adresa      CHAR    (adresa na kojoj se lokaciji nalazi)
+                                                                      grad        CHAR    (grad u kojem se lokacija nalazi)
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodjenja.
+
+  a) Ispisati popis vozaca (ime i prezime) koji su u posljednjem tromjesecju prosle godine obavili bar jednu
+     voznju u vozilima ciji tip sadrzi rijec "MERCEDES", a ne sadrzi cifru. Svaki takav vozac se u popisu
+     treba naci samo jednom. (2b)
+
+      SELECT DISTINCT v.ime_vozac,
+          v.prez_vozac
+      FROM VOZAC v
+      INNER JOIN VOZNJA voznja
+          ON v.sif_vozac = voznja.sif_vozac
+      INNER JOIN VOZILO voz
+          ON voznja.regbr = voz.regbr
+      WHERE YEAR(voznja.datum) = YEAR(CURDATE()) - 1
+        AND MONTH(voznja.datum) BETWEEN 10 AND 12
+        AND voz.tip LIKE '%MERCEDES%'
+        AND voz.tip NOT RLIKE '[0-9]';
+
+
+  b) Ispisati broj voznji, ukupan broj predjenih kilometara i prosjecnu tezinu tereta oavljene vozilima 
+     nosivosti izmedju 5 i 10t, a koje su krenule iz gradova ciji nazivi pocinju slovima od K do P i ne 
+     zavrsavaju samoglasnikom. (2b)
+
+         SELECT COUNT(*) AS broj_voznji,
+           SUM(v.broj_km) AS ukupan_broj_km,
+           AVG(t.tezina) AS prosjecna_tezina
+         FROM VOZNJA v
+         INNER JOIN VOZILO voz
+             ON v.regbr = voz.regbr
+         INNER JOIN TERET t
+             ON v.sif_teret = t.sif_teret
+         INNER JOIN LOKACIJA lok
+             ON v.sif_lok_od = lok.sif_lok
+         WHERE voz.nosivost BETWEEN 5 AND 10
+           AND lok.grad >= 'K'
+           AND lok.grad < 'Q'
+           AND lok.grad RLIKE '[^AEIOUaeiou]$';
+
+
+  c) Ispisati ime i prezime vozaca, registarski broj i tip vozila za voznje koje su proslog mjeseca 
+     obavljene izmedju lokacija koje se ne nalaze u istom gradu (2b)
+
+
+          SELECT v.ime_vozac,
+              v.prez_vozac,
+              voz.regbr,
+              voz.tip
+          FROM VOZNJA voznja
+          INNER JOIN VOZAC v
+              ON voznja.sif_vozac = v.sif_vozac
+          INNER JOIN VOZILO voz
+              ON voznja.regbr = voz.regbr
+          INNER JOIN LOKACIJA lok_od
+              ON voznja.sif_lok_od = lok_od.sif_lok
+          INNER JOIN LOKACIJA lok_do
+              ON voznja.sif_lok_do = lok_do.sif_lok
+          WHERE voznja.datum >= DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+            AND voznja.datum <  DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            AND lok_od.grad <> lok_do.grad;
+
+
+_______________________________________________________________________________________________________
+2.)
+Sta je to model baze podataka? Objasniti 3 modela (nivoa opisa) baze podataka. (3b) 
+
+_______________________________________________________________________________________________________
+3.)
+Relacijska shema PROJEKAT sastoji se od sljedecih atributa:
+
+  - sifProjekat       - sifra projekta
+  - nazivProjekat     - naziv projekta
+  - opisProjekat      - opis projekta
+  - datumPocetak      - datum pocetka projekta
+  - datumZavrsetak    - datum zavrsetka projekta
+  - sifZadatak        - sifra zadatka
+  - nazivZadatak      - naziv zadatka
+  - opisZadatak       - opis zadatka
+  - sifOsoba          - sifra osobe
+  - imeOsoba          - ime osobe
+  - prezOsoba         - prezime osobe
+  - emailOsoba        - email adersa osobe
+  - datumZadatak      - datum obavljanja zadatka
+  - brojSati          - broj sati utrosenih na rad na zadatku u toku jednog dana
+
+Pretpostavljeni kljuc relacije je sifZadatak (sifra zadatka). Svaki projekat se sastoji od vise zadataka 
+koji se trebaju obaviti, ali jedan zadatak se obavlja na samo jednom projektu.
+
+Jedan zadatak moze obavljati vise osoba i tokom vise dana. 
+U toku jednog dana jedna osoba moze raditi na vise zadataka.
+Vodi se evidencija koliko je svaka osoba u toku jednog dana utrosila sati na obavljanje 
+odredjenog zadatka. 
+Normalizirati relaciju PROJEKTI na:
+
+  a) 1NF (2b)
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+Rjesenje:
+
+1NF
+
+PROJEKAT(
+  sifProjekat, nazivProjekat, opisProjekat, 
+  datumPocetak, datumZavrsetak, 
+  sifZadatak, nazivZadatak, opisZadatak,
+  sifOsoba, imeOsoba, prezOsoba, emailOsoba
+  datumZadatak, brojSati
+)
+
+Svaki projekat se sastoji od vise zadataka 
+koji se trebaju obaviti, ali jedan zadatak se obavlja na samo jednom projektu.
+
+Zbog toga vrijedi:
+
+  sifZadatak -> sifProjekat
+
+Ovo ispod nije dobro: 
+  K_PROJEKAT = {sifProjekat, sifZadatak, sifOsoba, datumZadatak}
+
+👉 Uključivanje sifProjekat bi bilo redundantno — ne mijenja identifikaciju,
+ali narušava princip minimalnosti ključa.
+
+JAKO BITNO:
+sifZadatak --> sifProjekat
+ALI
+sifProjekat -/-> sifZadatak
+
+
+Vec treba uzeti ovo:
+  K_PROJEKAT = {sifZadatak, sifOsoba, datumZadatak}
+
+2NF
+
+Postoje FZ: 
+  sifProjekat -> nazivProjekat, opisProjekat, datumPocetak, datumZavrsetak
+  sifZadatak -> nazivZadatak, opisZadatak, sifProjekat
+  sifOsoba -> imeOsoba, prezOsoba, emailOsoba
+  sifZadatak, sifOsoba, datumZadatak -> brojSati
+
+Prema FZ imamo:
+  
+
+ZADATAK (sifZadatak, nazivZadatak, opisZadatak, sifProjekat, nazivProjekat,
+opisProjekat, datumPocetak, datumZavrsetak)
+  K_ZADATAK = {sifZadatak} -> Zadovoljena je 2NF
+
+OSOBA (sifOsoba, imeOsoba, prezOsoba, emailOsoba)
+  K_OSOBA = {sifOsoba}
+
+BR_SATI (sifZadatak, sifOsoba, datumZadatak, brojSati)
+  K_BR_SATI = {sifZadatak, sifOsoba, datumZadatak}
+
+
+3NF
+
+Postje TFZ:
+  sifProjekat -> nazivProjekat, opisProjekat, datumPocetak, datumZavrsetak
+
+PROJEKAT (sifProjekat, nazivProjekat, opisProjekat, datumPocetak, datumZavrsetak) 
+  K_PROJEKAT = {sifProjekat} -> Zadovoljena je 2NF
+
+ZADATAK (sifZadatak, nazivZadatak, opisZadatak, sifProjekat)
+  K_ZADATAK = {sifZadatak} -> Zadovoljena je 2NF
+
+
+✅ Konačna shema u 3NF
+
+PROJEKAT(_sifProjekat_, nazivProjekat, opisProjekat,
+         datumPocetak, datumZavrsetak)
+
+ZADATAK1(_sifZadatak_, nazivZadatak, opisZadatak, sifProjekat)
+
+OSOBA(_sifOsoba_, imeOsoba, prezOsoba, emailOsoba)
+
+RAD(_sifZadatak_, _sifOsoba_, _datumZadatak_, brojSati)
+
+_______________________________________________________________________________________________________
+

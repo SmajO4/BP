@@ -1,0 +1,158 @@
+Zadana je relacijska shema PACIJENT i relacija pacijent
+
+sifPac	prezPac	    imePac	postBrPac	 mjestoPac	adresaPac	datPosjet	iznRacPosjet	sifZub	sifZahvat	nazZahvat
+1111	  Husić	Huso	75000	  Tuzla	     Musala 2	  10.08.03	  60	        lg1	       123	    plombiranje
+1111	  Husić	Huso	75000	  Tuzla	     Musala 2	  10.08.03	  60	        ld4	       123	    plombiranje
+1111	  Husić	Huso	75000	  Tuzla	     Musala 2	  10.08.03	  60	        lg1	       234	    poliranje
+1234	  Fatić	Fata	75020	  Tuzla	     Breške 27	10.08.03	  45	        dg3	       123	    plombiranje
+1234	  Fatić	Fata	75020	  Tuzla	     Breške 27	10.08.03	  45	        lg2	       456	    brušenje
+1234	  Fatić	Fata	75020	  Tuzla	     Breške 27	11.08.03	  20	        lg2	       567	    otisak za krunu
+
+Pretpostavljeni kljuc je sifPac.
+Vrijednost atributa iznRacPosjet predstavlja ukupan iznos racuna za jednu posjetu pacijenta (za jedan datum).
+
+Pacijent ne moze biti primljen vise puta istog dana.
+Normalizirati relaciju pacijent na I, II i III NF
+
+
+
+pp kljuc sifPac
+
+-----------------------------------------------------------------------
+NORMALIZACIJA NA 1NF:
+
+Postoje FZ:
+  
+  sifPac -> prezPac, imePac, postBrPac, mjestoPac, adresaPac
+
+
+Radi razlicite zube, radi razlicite zahvate.
+
+Ne postoje FZ:
+
+  sifPac -> datPosjet, iznRacPosjet, sifZub, sifZahvat, nazZahvat
+
+
+
+  PACIJENT1(sifPac, prezPac, imePac, postBrPac, mjestoPac, adresaPac)
+            ------
+
+Ovo sto nije odredjeno ide u posebnu relaciju:
+
+  POSJET(sifPac, datPosjet, iznRacPosjet, sifZub, sifZahvat, nazZahvat)
+         ------  ---------                ------  ---------
+
+
+Ovo bi bila 1 NF
+
+  PACIJENT1(sifPac, prezPac, imePac, postBrPac, mjestoPac, adresaPac)
+            ------
+
+  POSJET(sifPac, datPosjet, iznRacPosjet, sifZub, sifZahvat, nazZahvat)
+         ------  ---------                ------  ---------
+
+-----------------------------------------------------------------------
+NORMALIZACIJA NA 2NF
+
+PACIJENT1 ima jednostavan kljuc, tako da je PACIJETN1 u 2NF.
+
+
+
+Sto se tice POSJETE
+
+  POSJET(sifPac, datPosjet, iznRacPosjet, sifZub, sifZahvat, nazZahvat)
+         ------  ---------                ------  ---------
+
+Zakljucili smo da sifPac, datPosjet sami zakljucuju iznRacPosjet
+
+Postoje FZ:
+
+  sifPac, datPosjet -> iznRacPosjet
+
+=> POSJET nije u 2NF
+
+
+Normalizacijom:
+
+  RACUN(sifPac, datPosjet, iznRacPosjet)
+        ------  ---------
+
+  POSJET(sifPac, datPosjet, sifZub, sifZahvat, nazZahvat)
+         ------  ---------  ------  ---------
+
+
+Postoje FZ:
+
+sifZahvat -> nazZahvat 
+
+=> POSJET1 nije u 2NF
+
+
+  ZAHVAT(sifZahvat, nazZahvat)
+         ---------
+
+  POSJET(sifPac, datPosjet, sifZub, sifZahvat)
+         ------  ---------  ------  ---------
+
+// Nismo morali postepeno.
+
+
+
+Sada imamo relacije u 2NF
+
+  PACIJENT1(sifPac, prezPac, imePac, postBrPac, mjestoPac, adresaPac)
+            ------
+
+  ZAHVAT(sifZahvat, nazZahvat)
+         ---------
+
+  RACUN(sifPac, datPosjet, iznRacPosjet)
+        ------  ---------
+
+  POSJET2(sifPac, datPosjet, sifZub, sifZahvat)
+         ------  ---------  ------  ---------
+
+
+-----------------------------------------------------------------------
+NORMALIZACIJA NA 3NF
+
+
+  PACIJENT1(sifPac, prezPac, imePac, postBrPac, mjestoPac, adresaPac)
+            ------
+
+postBrPac -> mjestoPac
+
+mjestoPac tranzitivno ovisi o kljucu
+
+=> PACIJENT1 nije u 3NF
+
+Normalizacijom:
+
+  MJESTO (postBrPac, mjestoPac)
+          ---------
+
+
+  PACIJENT1(sifPac, prezPac, imePac, postBrPac,adresaPac)
+            ------ 
+
+Sad je PACIJENT1 u 3NF
+
+
+
+Posmatrajmo:
+
+  RACUN(sifPac, datPosjet, iznRacPosjet)
+        ------  ---------
+
+On je vec u 3NF
+
+
+
+Moja shema baze podataka se sastoji od relacijskih shema, 
+MJESTO, PACIJENT2, RACUN, ZAHVAT, POSJET2
+
+
+Na kraju bi bilo preimenovanje.
+
+
+

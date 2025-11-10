@@ -1,0 +1,219 @@
+07.12.2011.
+1.) 
+Medju ucenicima koji zavrsavaju srednju skolu i zele se upisati na fakultet provedena je anleta.
+U bazi podataka nalaze se relacije:
+
+MJESTO                                                                    UCENIK 
+* pbr        INT      (postanski broj)                                    * jmbg        CHAR   (JMBG ucenika)
+  nazMjesto  VARCHAR  (naziv mjesta)                                        prezUcenik  NCHAR  (prezime ucenika)
+                                                                            imeUcenik   NCHAR  (ime ucenika)
+SKOLA                                                                       sifSkola    INT    (sifra srednje skole koju ucenik pohadja)
+* sifSkola   INT      (sifra skole)                                         sifFakultet INT    (sifra fakulteta na kojeg se ucenik zeli upisati)
+  nazSkola   VARCHAR  (naziv skole)                                         opciUspjeh  SMINT  (opci uspjeh)
+  pbrSkola   INT      (postanski broj mjesta u kojem se skola nalazi)
+
+FAKULTET 
+* sifFakultet     INT      (sifra fakulteta)
+  nazFakultet     VARCHAR  (naziv fakulteta) 
+  pbrFakultet     INT      (postanski broj mjesta u kojem se nalazi fak)
+  adresaFakultet  VARCHAR  (adresa fakulteta)
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak:
+  
+  a) Ispisati ukupan broj i prosjecan opci uspjeh ucenika koji pohadjaju srednju skolu u mjestima 
+     ciji naziv zapocinje slovima S do Z. (2b)
+
+     SELECT COUNT(*) AS broj_ucenika,
+       AVG(u.opciUspjeh) AS prosjecan_uspjeh
+     FROM UCENIK u
+     INNER JOIN SKOLA s
+         ON u.sifSkola = s.sifSkola
+     INNER JOIN MJESTO m
+         ON s.pbrSkola = m.pbr
+     WHERE LEFT(m.nazMjesto, 1) BETWEEN 'S' AND 'Z';
+
+  b) Ispisati JMBG, ime i prezime ucenika, naziv mjesta srednje skole i mjesta fakulteta za ucenkike
+     koji ne pohadjaju srednju skolu u istom mjestu u kojem se nalazi fakultet na kojeg se zele upisati.
+     Ne koristiti podupite! (2b)
+
+     SELECT u.jmbg,
+       u.imeUcenik,
+       u.prezUcenik,
+       ms.nazMjesto AS mjesto_skole,
+       mf.nazMjesto AS mjesto_fakulteta
+     FROM UCENIK u
+     INNER JOIN SKOLA s
+         ON u.sifSkola = s.sifSkola
+     INNER JOIN FAKULTET f
+         ON u.sifFakultet = f.sifFakultet
+     INNER JOIN MJESTO ms
+         ON s.pbrSkola = ms.pbr
+     INNER JOIN MJESTO mf
+         ON f.pbrFakultet = mf.pbr
+     WHERE ms.pbr <> mf.pbr;
+
+  c) Za svako mjesto u kojem pohadja srednju skolu neki od anketiranih ucenika ispisati postanski broj,
+     nazim mjesta te ukupan broj razlicith fakulteta na koje se zele upisati anketirani ucenici iz tog 
+     mjesta. Rezultate porediti tako da se mjesta s vecim brojem fakulteta na koje se zele upisati 
+     anketirani ucenici nalaze blice pocetku liste. Mjest au kojima ima jedan broj razlicitih fakulteta
+     poredati po abecedi. Rijesiti bez koristenja podupita (2b)
+
+     SELECT m.pbr,
+       m.nazMjesto,
+       COUNT(DISTINCT u.sifFakultet) AS broj_fakulteta
+     FROM MJESTO m
+     INNER JOIN SKOLA s
+         ON m.pbr = s.pbrSkola
+     INNER JOIN UCENIK u
+         ON s.sifSkola = u.sifSkola
+     GROUP BY m.pbr, m.nazMjesto
+     ORDER BY broj_fakulteta DESC,
+              m.nazMjesto ASC;
+
+  d) Ispisati naizve skola i broj anketiranih ucenika koji ih pohadja za one skole ciji naziv sadrzi 
+     niz Gimnazija ili gimnazija, a prosjecan opci uspjeh ucenika koji ju pohadjaju je barem za 0.5 
+     veci od prosjecnog opceg uspjeha svih anketiranih ucenika. Vise skola moze imati isti naziv (2b) 
+
+     SELECT s.nazSkola,
+       COUNT(u.jmbg) AS broj_ucenika
+     FROM SKOLA s
+     INNER JOIN UCENIK u
+         ON s.sifSkola = u.sifSkola
+     WHERE s.nazSkola LIKE '%Gimnazija%'
+        OR s.nazSkola LIKE '%gimnazija%'
+     GROUP BY s.sifSkola, s.nazSkola
+     HAVING AVG(u.opciUspjeh) >= (
+         SELECT AVG(opciUspjeh)
+         FROM UCENIK
+     ) + 0.5;
+
+
+________________________________________________________________________________________________________
+2.)
+Sta je to integritet baze podataka i koja pravila integireta postoje?
+Za tabelu UCENIK, iz prethodnog zadatka napisati SQL naredbu za kreiranje relacije sa ugradjenim 
+pravilima integriteta (2b).
+
+________________________________________________________________________________________________________
+3.) 
+Relacijska shema CDTEKA sastoji se od sljedecih atributa:
+  - sifCD       - sifra CD-a
+  - nazCD       - naziv CD-a
+  - cijena      - cijena CD-a
+  - sifIzd      - sifra izdavaca CD-a
+  - nazIzd      - naziv izdavaca CD-a
+  - sifPj       - sifra pjesme 
+  - nazPj       - naziv pjesme
+  - sifZanr     - sifra zanra pjesme
+  - nazZanr     - naziv zanra pjesme
+  - trajanje    - trajanje pjesme
+
+Pretpostavljeni kljuc relacije je sifCD (sifra CD-a).
+Svaki CD izdaje jedan izdavac. Izdavaci sami odredjuju sifru CD-a (razliciti CD-vi mogu imati iste sifre 
+ako ih izdaju razliciti izdavaci).
+
+Pjesma ima sifru, naziv i trajanje, a pripada jednom zanru. Sifra pjesme jednoznacno oredjuje pjesmu.
+
+Na jednom CD-u se moze nalaziti vise pjesama, ali se ista pjesma moze pojaviti samo jednom.
+Ista se pjesma moze pojaviti na razlicitim CD-ovima bilo kojeg izdavaca.
+
+Normalizirati relaciju CDTEKA na: 
+
+  a) 1NF (ostvariti prosirenjem kljuca) (2b)
+  b) 2NF (2b)
+  c) 3NF (2b)
+
+
+1NF
+
+CDTEKA (
+  sifCD, nazCD, cijena,
+  sifIzd, nazIzd, 
+  sifPj, nazPj, 
+  sifZanr, nazZanr,
+  trajanje
+)
+
+POSTOJE FZ:
+sifIzd -> nazIzd
+sifCD - nije jedinstvena
+sifCD, sifIzd -> nazCD, cijena
+sifPj -> nazPj, sifZanr, nazZanr, trajanje
+
+K_CDTEKA = {sifCD, sifIzd, sifPj}  -  Zadovoljena je 1NF
+
+
+2NF
+sifCD, sifIzd -> nazCD, cijena
+sifIzd -> nazIzd
+sifPj -> nazPj, sifZanr, nazZanr, trajanje
+
+Prema tome, imamo:
+
+CD (sifCD, sifIzd, nazCD, cijena)
+  K_ = {sifCD, sifIzd}
+
+IZDAVAC (sifIzd, nazIzd)
+  K_ = {sifIzd}
+
+PJESMA (sifPj, nazPj, sifZanr, nazZanr, trajanje)
+  K_ = {sifPj}
+
+
+3NF
+Postoje TFZ  
+  sifZanr -> nazZanr
+
+Imamo:
+CD (sifCD, sifIzd, nazCD, cijena)
+  K_ = {sifCD, sifIzd}
+
+IZDAVAC (sifIzd, nazIzd)
+  K_ = {sifIzd}
+
+PJESMA (sifPj, nazPj, sifZanr, trajanje)
+  K_ = {sifPj}
+
+ZANR (sifZanr, nazZanr)
+  K_ = {sifZanr}
+
+✅ Konačna shema u 3NF
+
+IZDAVAC(_sifIzd_, nazIzd)
+
+CD(_sifIzd_, _sifCD_, nazCD, cijena)
+
+ZANR(_sifZanr_, nazZanr)
+
+PJESMA(_sifPj_, nazPj, trajanje, sifZanr)
+
+CD_PJ(_sifIzd_, _sifCD_, _sifPj_)
+
+________________________________________________________________________________________________________
+4.)
+Nabrojite i objasnite vrste tablica (relacija) koje postoje u relacijskim bazama podataka. (3b)
+
+________________________________________________________________________________________________________
+5.) 
+Zadane su relacije:
+    r | A   E   G |         s | B   C   D |         t | A   B   C   D |
+    ---------------         ---------------         -------------------
+      null  3   5               1   p   b               1   4   z   c
+        4   1   6               2  null null            0  null p   null
+        1   3   5             null  x   b             null  3  null null 
+        7   2   4               4   x   null            0   2  null null 
+                                4   z   c             null null x   b 
+                                2   z   d               5   1   x   b 
+                                                      null  1   x   b
+
+Napisite rezultate obavljanja sljedecih operacij (SQL upite nije potrebno pisati):
+
+  a) π_CD(s) ∩ π_CD(t)  (1b)
+  b) SELECT * FROM s WHERE s.B => ALL (SELECT t.B FROM t)   (1.5b)
+  c) SELECT COUNT(D) FROM s WHERE B < >2  (1.5b)
+________________________________________________________________________________________________________
+6.) 
+Zadana je relacijska shema R(A, B, C, D). Navedite primjer sadrzaja relacije r(R) na kojoj vrijedi funkcijska
+zavisnost AB -> CD, a ne vrijede funkcijske zavisnosti A -> CD i B -> CD. 
+Relacija treba sadrzavati 4 do 5 n-torki. (2b)

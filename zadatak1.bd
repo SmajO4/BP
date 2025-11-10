@@ -1,0 +1,309 @@
+NORMALIZACIJA NA 1 NF:
+
+U biblioteci se evidentiraju posudbe knjiga.
+Relacijska shema se sastoji od sljedecih atributa:
+
+SIFCLN  -  sifra clana                                 POS = SIFCLN, PREZCLN, IMECLN, DAT POS
+PREZCLN -  prezime clana                               NAZMJ, ADRCLN, NAZKNJ, SIFIZD, NAZIZD
+IMECLN  -  ime clana                                    
+DATPOS  -  datum posudbe                                        
+PBR     -  postanski broj mjesta stanovanja clana      Pretpostavljeni kljuc je : K_pos = {SIFCLN} 
+NAZMJ   -  naziv mjesta stanovanja clana                      
+ADRCLN  -  adresa clana                                Normalizirajte relaciju pos na: 1NF, 2NF, 3NF 
+SIFKNJ  -  sifra knjige                                ako vrijede pravila
+NAZKNJ  -  naziv knjige                                       
+SIFIZD  -  sifra izdavaca                              Jedan clan istog dana moze posuditi vise knjiga 
+NAZIZD  -  naziv izdavaca                              Jedan clan istu knjigu moze posuditi vise puta 
+                                                       Jedna knjiga ima jednog izdavaca
+
+                                                       Ovo su pravila koja ce biti dovoljna.
+                                                       Ocite stvari na ispitu nece biti nagalsene 
+                                                       (kao npr sifCln, sta odredjuje i slicno)
+
+
+
+  Postoje FZ:
+
+  sifCln -> prezCln, imeCln             Ovo je ocito
+
+
+Da li sifCln odredjuje datum posudbe?
+- Ne znamo, jer jedan clan moze posudjivati knjige vise puta - vise datuma.
+
+
+  Ne postoje FZ:
+
+  sifCln -> datpos
+
+
+
+
+Sto se tice pbr, clan zivi u jednom mjestu, a ako znam clana znam:
+pbr, naziv mjesta i adresu
+
+Prema tome
+
+  Postoje FZ:
+
+  sifCln -> prezCln, imeCln, pbr, nazmj, adrcln
+
+
+
+Sto se tice sifre knjige.
+
+Imamo pravila, jedan clan moze posudjivati knjgu vise puta, samim time i 
+razlicite knjige sto znaci, ako znamo clana, ne znamo koja je knjiga upitanju.
+
+
+  Ne postoje FZ:
+
+  sifCln -> datpos, sifKnj, nazKnj
+
+
+A izdavaca, takodjer ne odredjuje, jer jedna knjiga ima jednog izdavaca,
+a razlicite knjige izdavaju razliciti izdavaci.
+Prema tome
+
+
+  Ne postoje FZ:
+
+  sifCln -> datpos, sifKnj, nazKnj, sifizd, nazizd
+
+
+Dakle imamo:
+
+  Postoje FZ:
+
+      sifCln -> prezCln, imeCln, pbr, nazmj, adrcln
+
+  Ne postoje FZ:
+
+      sifCln -> datpos, sifKnj, nazKnj, sifizd, nazizd
+
+
+Obzirom da sifCln funkcijiski ne odredjuje sve atribute, to znaci da ova
+relacijska shema pos nije u prvoj normalnoj formi.
+
+
+Imamo 2 nacina kako mozemo raditi normalizaciju na prvu normalnu formu:
+1. rastavljanje na relacije odma
+2. promjena kljuca
+
+Obzirom da nije receno, mozemo izabrati, a ako se da, onda trebamo tako raditi.
+
+
+
+Bolje je razlaganje poceti sto prije obzirom da radimo normalizaciju.
+
+Trebamo izdvojiti u zasebnu relaciju, primarni kljuc zajedno sa onim atributima 
+koje funkcijski odredjuje.
+
+
+Ocito imamo relaciju koja predstavlja clana:
+
+  CLAN(sifCln, prezCln, imeCln, pbr, nazmj, adrcln)
+       ------
+
+Ovo je nova relacija nastala projekcijom po relaciji POS, po ovim atributima.
+
+
+U drugoj relaciji, ostaje originalni kljuc relacije i atributi koje ne odredjuje
+funkcijski.
+
+  POS1(sifCln, datPos, sifKnj, nazKnj, sifIzd, nazIzd)
+
+Sad je ostalo da se odredi kljuc.
+sam sifCln nije kljuc.
+
+
+
+Moramo vidjeti pravila koja su nam data.
+
+    Jedan clan istog dana moze posuditi vise knjiga 
+    Jedan clan istu knjigu moze posuditi vise puta 
+    Jedna knjiga ima jednog izdavaca
+
+
+Posmatramo:
+  POS1(sifCln, datPos, sifKnj, nazKnj, sifIzd, nazIzd)
+
+Da li kljuc moze biti sifCln i datPos? 
+
+Obzirom da jedan clan moze isti dan uzeti vise knjiga, to znaci da ovo ne odredjuje 
+koju sam knjigu uzeo.
+
+Ne znam koja je knjiga u pitanju.
+
+
+sifCln i sifKnj?
+
+jedan clan jednu knjigu moze posudjivati vise puta i to ne odredjuje datPos.
+Jednu knjigu mogu posuditi danas i opet nekad kasnije.
+
+Ocigledno je da moramo imati kao kljuc sva ti ova atributa:
+  sifCln, datPos, sifKnj
+
+Imam:
+
+  POS1(sifCln, datPos, sifKnj, nazKnj, sifIzd, nazIzd)
+      -------  ------  ------
+
+
+Dakle, ovo bi bila prva normalna forma
+
+
+  CLAN(sifCln, prezCln, imeCln, pbr, nazmj, adrcln)
+       ------
+
+  POS1(sifCln, datPos, sifKnj, nazKnj, sifIzd, nazIzd)
+      -------  ------  ------
+
+(Dakle mozemo to raditi ovako, da navedemo shemu koja nastaje i da podvucemo kljuceve)
+
+
+---------------------------------------------------------------------------------------
+
+NORMALIZACIJA NA 2NF:
+
+2NF je zadovoljena ako je zadovoljena 1NF i ako kljuc relacije potpuno funkcijski 
+odredjuje nekljucne atribute.
+
+Relacijska shema CLAN vec je u 2NF jer ima jednotavan kljuc:
+
+  CLAN(sifCln, prezCln, imeCln, pbr, nazmj, adrcln)
+       ------
+
+CLAN je u 2NF (ovo moramo naglasiti).
+
+
+
+
+POS1 ima slozen kljuc.
+
+Da li postoji dio kljuca koji bi sam funkcijski odredio neke od nekljucnih atributa.
+
+Ocigledno je da sifKnj sam odredjuje sve preostale.
+
+
+Postoje FZ:
+
+  sifKnj -> nazKnj, 
+
+Obzirom na pravilo, jedna knjiga ima jednog izdavaca pa vrijedi:
+
+  sifKnj -> nazKnj, sifIzd, nazIzd
+
+
+Prema tome, POS1 nije u 2NF
+
+
+Izdvajamo sve one atribute koji su nepotpuno funkcijski ovisni o kljucu i dio kljuca 
+koji ih sam funkcijski odredjuje.
+
+Prema tome imamo:
+
+  KNJIGA(sifKnj, nazKnj, sifIzd, nazIzd)
+         ------
+
+I lijeva strana tj sifKnj je kljuc.
+
+A u relaciji POS2, ostaje originalni kljuc relacije i oni koji su potpuno ovisni o tom 
+kljucu.
+
+  POS2(sifCln, datPos, sifKnj)
+      -------  ------  ------
+
+Vise nemamo nekljucnih atributa.
+
+Ova relacijska shema je sastavljena samo od kljuca.
+
+
+
+Dakle, zadovoljena je 2 NF.
+
+  CLAN(sifCln, prezCln, imeCln, pbr, nazmj, adrcln)
+       ------
+
+  POS2(sifCln, datPos, sifKnj)
+      -------  ------  ------
+
+  KNJIGA(sifKnj, nazKnj, sifIzd, nazIzd)
+         ------
+---------------------------------------------------------------------------------------
+
+NORMALIZACIJA NA 3 NF
+
+3NF je zadovoljena ako je zadovoljena 1NF i niti jedan nekljucni atribut nije tranzitivno
+ovisan o kljucu.
+
+
+Ako posmatramo:
+  CLAN(sifCln, prezCln, imeCln, pbr, nazmj, adrcln)
+       ------
+
+vidimo da pbr odredjuje naziv mjesta.
+
+Dakle, postoje FZ:
+
+  pbr -> nazMj    (ne vrijedi da pbr -> sifCln)
+
+nazMj je tranzitivno ovisan o kljucu.
+
+
+Dakle CLAN nije u 3NF
+
+Normalizacijom na 3NF, izdvajaju se u zasebnu relaciju atributi koji su tranzitivno
+ovisni o kljucu i srednji dio te tranzitivne funkcijske ovisnosti.
+
+
+Dobijamo relaciju:
+  MJESTO(pbr, nazMj)
+         ---
+
+
+A u CLANu ostaju:
+
+  CLAN1(sifCln, prezCln, imeCln, pbr, adrcln)
+       ------
+
+CLAN je u 3 NF
+
+
+Posmatrajmo:
+
+  KNJIGA(sifKnj, nazKnj, sifIzd, nazIzd)
+         ------
+
+Ocigledno je da sifIzd odredjuje nazIzd
+
+Postoje FZ:
+
+  sifIzd -> nazIzd
+
+nazIzd je tranzitivno ovisan o kljucu:
+sifKnj -> sifIzd
+
+Ne vrijedi obrunto jer jedan izdavac moze izdati vise knjiga.
+
+
+Prema tome, relacija KNJIGA nije u 3NF
+
+
+Opet normalizacijom imamo:
+
+IZDAVAC(sifIzd, nazIzd)
+        ------
+
+A u originalnoj relaciji:
+
+  KNJIGA1(sifKnj, nazKnj, sifIzd)
+         ------
+
+POS2 je u 3NF.
+
+
+Sto znaci da se shema nase baze podataka sastoji od relacijskih shema:
+MJESTO, CLAN1, IZDAVAC, KNJIGA1 i POS2
+
+
+mjesto clan, izdavac knjiga i posudba

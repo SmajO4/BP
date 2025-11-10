@@ -1,0 +1,185 @@
+13.11.2018 C
+1.)
+U bazi podataka kreirane su tablice:
+
+LUKA                                      PLOVIDBA 
+  sifLuka     INTEGER   (sifra luke)        regBrBrod       CHAR    (registarski broj broda)
+  nazLuka     CHAR      (naziv luke)        datPolaska      DATE    (datum polaska broda)
+                                            sifLukaOd       INT     (sifra luke iz koje brod polazi (isplovava))
+                                            sifLukaDo       INT     (sifra luke u koju brod dolazi (uplovaljava))
+                                            datDolaska      DATE    (datum dolaska broda u luku u koju plovi)
+                                            ukUkrcTezina    INT     (ukupna na broj ukrcana tezina tereta na toj plovidbi)
+BROD
+  regBrBrod       CHAR    (registarski broj broda)
+  imeBrod         CHAR    (ime broda)
+  nosivost        INT     (najveca ukupna tezina koju brod moze ukcrati u t)
+  sifMaticLuka    INT     (sifra maticne luke broda (luka u kojoj je registrovan))
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodnjenja.
+Ne prihvataju se rjesenja gdje se nepotrebno koriste podupiti
+
+  a) Ispisati registarske brojeve i imena brodova koji su plovidbu zapoceli u toku posljednjih 10 dana 
+     i u odredisnu luku nece uploviti barem jos 3 dana (2b)
+
+        SELECT DISTINCT b.regBrBrod,
+               b.imeBrod
+        FROM BROD b
+        INNER JOIN PLOVIDBA p
+            ON b.regBrBrod = p.regBrBrod
+        WHERE p.datPolaska >= CURDATE() - INTERVAL 10 DAY
+          AND p.datDolaska >= CURDATE() + INTERVAL 3 DAY;
+
+  b) Ispistai registarske brojeve i imena brodova koji su iz luke Rijeka u lucu New York barem jednom
+     prevozili teret ukupne ukrcane tezine vece od 200t. Svaki brod se u listi smije pojviti 
+     najvise jednom. (2b)
+
+
+        SELECT DISTINCT b.regBrBrod,
+           b.imeBrod
+        FROM BROD b
+        INNER JOIN PLOVIDBA p
+            ON b.regBrBrod = p.regBrBrod
+        INNER JOIN LUKA l1
+            ON p.sifLukaOd = l1.sifLuka
+        INNER JOIN LUKA l2
+            ON p.sifLukaDo = l2.sifLuka
+        WHERE l1.nazLuka = 'Rijeka'
+          AND l2.nazLuka = 'New York'
+          AND p.ukUkrcTezina > 200;
+
+  c) Ispisati registarski broj i ime brodova u obliku "regBrBrod-imeBrod" koji prosle godine nijednom
+     nisu isplovljavali iz svoje maticne luke (2b)
+
+        SELECT CONCAT(b.regBrBrod, '-', b.imeBrod) AS brod
+        FROM BROD b
+        WHERE NOT EXISTS (
+            SELECT *
+            FROM PLOVIDBA p
+            WHERE p.regBrBrod = b.regBrBrod
+              AND p.sifLukaOd = b.sifMaticLuka
+              AND YEAR(p.datPolaska) = YEAR(CURDATE()) - 1
+        );
+______________________________________________________________________________________________________
+2.) 
+Navedite i objasnite osnovne operacije relacijske algebre. Objasnite pojam unijski kompatibilnih relacija (2b)
+
+
+
+______________________________________________________________________________________________________
+3.) 
+Koje su karakteristike lose koncipiranog modela (sheme) baze podataka. Objasnite i ilustrujte na vlastitom
+primjeru (2b)
+
+______________________________________________________________________________________________________
+4.) 
+Relacijska shema GRAND_SLAM sastoji se od sljedecih atributa:
+  
+    sifTakm       - sifra takmicara
+    imeTakm       - ime takmicara
+    prezTakm      - prezime takmicara
+    sifMec        - sifra meca
+    datumMec      - datum odigravanja meca
+    vrijemeMec    - vrijeme pocetka meca (npr. 15:00)
+    trajanjeMec   - trajanje meca u minutama
+    dobioSetova   - broj osvojenih setova jednog takmicara u mecu
+    rbrSet        - redni broj seta u mecu
+    dobioGemova   - broj dobijenih gemova jednog takmicara u toku jednog seta
+    sifKlub       - sifra kluba za koji nastupa takmicar
+    nazKlub       - naziv kluba za koji nastupa takmicar
+
+Pretpostavljeni kljuc relacije je sifTakm (sifra takmicara). Svaki takmicar nastupa samo za jedan klub,
+a za jedan klub moze nastupati vise takmicara.
+
+Jedan mec je odredjen svojom sifrom, a evidentira se broj osvojenih setova u toku meca za oba takmicara.
+Za svaki set u jednom mecu evidentira se koliko je gemova u tom setu osvojio svaki od takmicara.
+Normalizirati relaciju GRAND_SLAM na
+  a) 1NF (ostvariti promjenom kljuca) (2b)
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+Rjesenje:
+
+1NF
+
+GRAND_SLAM1(
+  sifTakm, sifMec, rbrSet, 
+  imeTakm, prezTakm,
+  datumMec, vrijemeMec, trajanjeMec,
+  dobioSetova, dobioGemova,
+  sifKlub, nazKlub
+  )
+
+K_GRAND_SLAM1 = {sifTakm, sifMec, rbrSet}
+
+Promjenom kljuca, zadovoljena je 1NF
+
+
+2NF
+
+Pogledajmo djelimicne FZ:
+
+sifTakm -> imeTakm, prezTakm, sifKlub, nazKlub
+sifMec -> datumMec, vrijemeMec, trajanjeMec, 
+sifMec, sifTakm -> dobioSetova
+sifMec, sifTakm, rbrSet -> dobioGemova
+
+Po FZ imamo:
+
+TAKMICAR (sifTakm, imeTakm, prezTakm, sifKlub, nazKlub)
+  K_TAKMICAR = {sifTakm}   -> zadovoljena 2NF
+
+MEC (sifMec, datumMec, vrijemeMec, trajanjeMec)
+  K_MEC = {sifMec}    -> zadovoljena 2NF
+
+SETOVI (sifMec, sifTakm, dobioSetova)
+  K_SETOVI = {sifMec, sifTakm} -> zadovoljena 2NF
+
+GEMOVI (sifMec, sifTakm, rbrSet, dobioGemova)
+  K_GEMOVI = {sifMec, sifTakm, rbrSet} -> zadovoljena 2NF
+
+
+3NF
+Imamo sljedece TZ:
+
+  sifKlub -> nazKlub
+
+Prema tome:
+
+TAKMICAR1 (sifTakm, imeTakm, prezTakm, sifKlub)
+  K_TAKMICAR1 = {sifTakm} -> zadovoljena 3NF
+   
+KLUB (sifKlub, nazKlub)
+  K_KLUB = {sifKlub} -> zadovoljena 3NF
+
+MEC (sifMec, datumMec, vrijemeMec, trajanjeMec)
+  K_MEC = {sifMec}    -> zadovoljena 3NF
+
+SETOVI (sifMec, sifTakm, dobioSetova)
+  K_SETOVI = {sifMec, sifTakm} -> zadovoljena 3NF
+
+GEMOVI (sifMec, sifTakm, rbrSet, dobioGemova)
+  K_GEMOVI = {sifMec, sifTakm, rbrSet} -> zadovoljena 3NF
+
+
+
+Konacno rjesenje:
+KLUB(_sifKlub_, nazKlub)
+
+TAKMICAR1(_sifTakm_, imeTakm, prezTakm, sifKlub)
+
+MEC(_sifMec_, datumMec, vrijemeMec, trajanjeMec)
+
+SETOVI(_sifMec_, _sifTakm_, dobioSetova)
+
+GEMOVI(_sifMec_, _sifTakm_, _rbrSet_, dobioGemova)
+
+
+
+GRAND_SLAM (KLUB, TAKMICAR, MEC, SETOVI, GEMOVI)
+______________________________________________________________________________________________________
+5.)
+Zadan je skup funkcijskih zavistnosti F = { ADE -> C, B -> DE, E -> F }
+Dokazite da vrijedi funkcijska zavistnost ABF -> CE. U svakom koraku dokaza 
+navedite aksiom ili pravilo koje ste koristili. (2b)
+

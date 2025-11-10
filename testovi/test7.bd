@@ -1,0 +1,116 @@
+1.) 9.11.2017
+
+    U bazi podataka BIBLIOTEKA nalaze se relacije (primarni kljucevi su oznaceni) 
+
+    KNJIGA      STUDENT      PREDMET
+    *sifKnj     *JMBG        *sifPred
+    naslov      ime          nazPred
+    cijena      prezime
+
+    LITERATURA 
+    *sifPred
+    *sifKnj 
+    rbr             redni broj vaznosti literature za predmet (za svaki predmet krece od 1)
+    obavezna        D-obavezna literatura, N-neobavezna literatura
+
+    POSUDBA 
+    *JMBG
+    *sifKnj         
+    datumPos       rok vracanja knjige (datum do kojeg studenta mora vratiti knjgu)
+    datumVra       datum vracanja knjige
+
+
+    Napisati po jedan SQL upit za svaki od zadatka.
+    Upiti moraju biti neovisni o datumu izvodjenja.
+
+    a) Za svaki predmet ciji naziv sadrzi rijec "osnovi" i zavrsava samoglasnikom 
+    ispisati obaveznu literaturu.
+    Potrebno je ispisati naziv predmeta, naziv knjige te oznaku (niz znakova) 
+    sastavljenu od prva tri znaka naslova knjige i sifre predmeta (npr. ako je za
+    predmet sa sifrom 1000 obavezna knjiga 'Baze podataka' ispisat ce se 
+    'Baz1000') (2b)
+
+         SELECT pr.nazPred,
+            k.naslov,
+            CONCAT(SUBSTR(k.naslov, 1, 3), pr.sifPred) AS oznaka
+         FROM PREDMET pr
+         JOIN LITERATURA l
+           ON pr.sifPred = l.sifPred
+         JOIN KNJIGA k
+           ON l.sifKnj = k.sifKnj
+         WHERE l.obavezna = 'D'
+           AND pr.nazPred LIKE '%osnovi%'
+           AND pr.nazPred RLIKE '[AEIOUaeiou]$';
+
+    b) Ispisati ukupnu i prosjecnu vrijednost svih knjiga koje su posudjene u 
+    proslom mjesecu, a nisu vracene na vrijeme.
+    Kao naslov za izracunatu ukupnu i prosjecnu vrijednost u izlaznoj se listi
+    pojavljuje tekst "ukupno" i "prosjek" (2b)
+
+        SELECT SUM(k.cijena) AS ukupno,
+           AVG(k.cijena) AS prosjek
+        FROM POSUDBA p
+        JOIN KNJIGA k
+          ON p.sifKnj = k.sifKnj
+        WHERE p.datumPos >= DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+          AND p.datumPos <  DATE_FORMAT(CURDATE(), '%Y-%m-01')
+          AND (p.datumVra > p.rok OR p.datumVra IS NULL);
+
+    c) Ispisati sve podatke o studentima koji su prosudili knjigu koju je taj dan
+    vratio neki drugi student (2b)
+
+        SELECT DISTINCT s.*
+        FROM STUDENT s
+        JOIN POSUDBA p1
+          ON s.JMBG = p1.JMBG
+        WHERE EXISTS (
+        SELECT 1
+        FROM POSUDBA p2
+        WHERE p2.sifKnj = p1.sifKnj
+          AND p2.datumVra = p1.datumPos
+          AND p2.JMBG <> p1.JMBG
+        );
+
+
+
+2.)
+    
+    Navedite i jednom recenicom objasnite svaku od specificnih operacija 
+    relacijske algebre (3b)
+
+3.)
+
+    Relacijska shema SKOLA sastoji se od sljedecih atributa
+
+    - sifUcenik         - sifra ucenika
+    - imeUcenik         - ime ucenika
+    - prezUcenik        - prezime ucenika
+    - rbrRazred         - redni broj nizeg razreda osnovne skole (1 - 4)
+    - oznRazred         - oznaka razrednog odjeljenja (npr. A,B,C...)
+    - brojUcenika       - broj ucenika u razrednom odjeljenju
+    - sifNastavnik      - sifra nastavnika koji je razrednik razrednom odjeljenju
+    - imeNastavnik      - ime nastavnika koji je razrednik razrednom odijeljenju
+    - prezNastavnik     - prezime nastavnika koji je razrednik razrednom odjeljenju
+    - sifPredmet        - sifra predmeta
+    - nazPredmet        - naziv predmeta
+    - ocjena            - ocjena ucenika iz predmeta
+
+
+    Pretpostavljeni kljuc relacije je K_UCENIK = { sifUcenik }.
+    Evidenciju se ocjene ucenika iz svih predmeta u jednoj skolskoj godini.
+    Ucenik pohadja jedan razred i odjeljenje koje ima jednog razrednika.
+    Normalizirajte relaciju SKOLA na:
+
+    a) 1NF (ostvariti promjenom kljuca) (2b)
+    b) 2NF                              (3b)
+    c) 3NF                              (3b)
+
+
+4.)
+
+    Na relaciji r (A, B, C, D, E) vrijede funkcijske zavisnosti iz 
+    skupa F = { AD -> C, CD -> E }. 
+    Koristenjem Armstrongovih aksioma i pravila koje iz njih proizilaze 
+    (osim pravila o pseudotranzitivnosti) dokazati da na relaciji r 
+    vrijedi funkcijska zavisnost AD -> E.   (3b)
+

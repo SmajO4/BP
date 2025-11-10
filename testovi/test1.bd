@@ -1,0 +1,184 @@
+12.11.2019 D
+1.)
+U bazi podataka trgovinskiLanac kreirane su relacije pomocu prikazanih naredbi
+
+    CREATE TABLE trgovina  (         CREATE TABLE proizvodUTrgovini (
+      sifTrgovina   INTEGER             sifTrgovina   INT
+      nazivTrgovina CHAR NOT NULL       sifProizvod   INT
+      ?                                 datum         DATE
+    );                                  cijena        DECIMAL
+                                          
+    CREATE TABLE proizvod (          CREATE TABLE dvnevnik (
+      sifProizvod     INTEGER           sifTrgovina INT
+      nazivProizvod   CHAR              sifProizvod INT
+    );                                  datum
+                                        cijena 
+                                     );
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak.
+
+Upiti moraju biti neovisni o datumu izvodjenja
+Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
+
+    a) Ispisati broj razlicitih proizvoda u trgovinama ciji naziv pocinje slovima 
+    od M do P, a zavrsava suglasnikom i kojima su cijene postavljene prije vise 
+    od pola godine. (2b)
+
+        SELECT COUNT(DISTINCT put.sifProizvod) AS brojProizvoda
+        FROM trgovina t
+        INNER JOIN proizvodUTrgovini put
+            ON t.sifTrgovina = put.sifTrgovina
+        WHERE t.nazivTrgovina RLIKE '^[M-P]'
+          AND t.nazivTrgovina RLIKE '[^aeiouAEIOU]$'
+          AND put.datum < DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
+
+    b) Za svaku trgovinu ispisati naziv trgovine, adresu i naziv trenutno 
+    najskupljeg proizvoda u toj trgovini (pretpostaviti da postoji samo jedan
+    takav proizvod) (2b)
+
+        SELECT t.nazivTrgovina, t.adresa, p.nazivProizvod FROM trgovina t  
+        INNER JOIN proizvodUTrgovini put 
+          ON t.sifTrgovina = put.sifTrgovina
+        INNER JOIN proizvod p 
+          ON put.sifProizvod = p.sifProizvod
+        WHERE put.cijena = ( 
+            SELECT MAX(put2.cijena)
+            FROM proizvodUTrgovini put2
+            WHERE put2.sifTrogvina = t.sifTrgovina
+        );
+
+    c) Ispisati naziv trgovine i naziv proizvoda u toj trgovini koji niti jednom 
+    nisu promijenili cijnu u nekakvoj drugoj trgovini. (2b)
+
+        SELECT t.nazivTrgovina, p.nazivProizvod
+        FROM trgovina t INNER JOIN proizvodUTrgovini put
+        ON t.sifTrgovina = put.sifTrgovina
+        INNER JOIN proizvod p 
+        ON put.sifProizvod = p.sifProizvod
+        WHERE NOT EXISTS (
+          SELECT * 
+          FROM dnevnik d
+          WHERE d.sifProizvod = put.sifProizvod
+          AND d.sifTrgovina <> put.sifTrogvina
+        );
+
+
+___________________________________________________________________________________________
+2.) 
+Nabroijte i objasnite vrste spajanja relacija koje postoje. (2b) 
+
+
+___________________________________________________________________________________________
+3.) 
+Relacijska shema DOPREME sastoji se od sljedecih atributa
+
+  sifAvion        - sifra aviona
+  oznTip          - oznata tipa aviona
+  nazTip          - naziv tipa aviona
+  nosivost        - nosivost aviona
+  vrijednost      - vrijednost aviona
+  datVrijednost   - zadnji datum izracunavanja vrijednosti aviona
+  sifAerodrom     - sifra aerodroma
+  nazAerodrom     - naziv aerodroma
+  maxNosivost     - maksimalna nosivost aviona koji moze sletjeti na aerodrom
+  datDoprema      - datum dopreme tereta na aerodrom
+  tezinaTeret     - tezina tereta koji je dopremljen na aerodrom
+
+Pretpostavljeni kljuc relacije je sifAvion (sifra aviona).
+Avion ima sifru, tip, nosivost, vrijednost i datum kada je ta vrijednsot odredjena.
+Istog dana jedan avion moze izvrsiti vise dostava na razlicite aerodrome, a takodjer 
+u istom danu na jedan aerodrom dostave moze izvrsiti vise aviona.
+
+Normalizirati relaciju DOPREME na:
+
+    a) 1NF (ostvariti promjenom kljuca) (2b)
+    b) 2NF (3b)
+    c) 3NF (3b)
+
+Rjesenje:
+
+1NF
+
+DOPREME( 
+  sifAvion, oznTip, nazTip,
+  nosivost, vrijednost, datVrijednost 
+  sifAerodrom, nazAerodrom, maxNosivost, 
+  datDoprema, tezinaTeret
+  )
+
+K_DOPREME = {sifAvion, sifAerodrom, datDoprema}
+
+Promjenom kljuca, zadovoljena je 1NF
+
+
+2NF
+
+Pogledajmo FZ:
+
+  sifAvion -> oznTip, nazTip, nosivost, vrijednost, datVrijednost
+
+  sifAerodorm -> nazAerodrom, maxNosivost
+
+  sifAvion, sifAerodrom, datDoprema -> tezinaTeret
+
+Po FZ imamo:
+
+AVION (sifAvion, oznTip, nazTip, nosivost, vrijednost, datVrijednost)   
+  K_AVION = {sifAvion}  - ZAVODOVOLJENA 2NF
+
+AERODROM (sifAerodrom, nazAerodrom, maxNosivost)
+  K_AERODROM = {sifAerodrom} - ZAVODOVOLJENA 2NF
+
+TERET (sifAvion, sifAerodrom, datDoprema, tezinaTeret)
+  K_TERET = {sifAvion, sifAerodrom, datDoprema} - ZAVODOVOLJENA 2NF
+  
+
+3NF
+
+Postoje TFZ:
+  oznTip -> nazTip 
+
+AVION (sifAvion, oznTip, nazTip, nosivost, vrijednost, datVrijednost)   
+  K_AVION = {sifAvion}  - ZAVODOVOLJENA 3NF
+
+TIPAVION (oznTip, nazTip)
+  K_TIPAVION = {oznTip}  -  ZAVODOVOLJENA 3NF
+
+AERODROM (sifAerodrom, nazAerodrom, maxNosivost)
+  K_AERODROM = {sifAerodrom} - ZAVODOVOLJENA 3NF
+
+TERET (sifAvion, sifAerodrom, datDoprema, tezinaTeret)
+  K_TERET = {sifAvion, sifAerodrom, datDoprema} - ZAVODOVOLJENA 3NF
+
+
+
+✅ Konačna shema u 3NF
+
+TIP(_oznTip_, nazTip)
+
+AVION1(_sifAvion_, oznTip, nosivost, vrijednost, datVrijednost)
+
+AERODROM(_sifAerodrom_, nazAerodrom, maxNosivost)
+
+DOPREME2(_sifAvion_, _sifAerodrom_, _datDoprema_, tezinaTeret)
+
+DOPREME (TIP, AVION, AERODROM, TERET) 
+___________________________________________________________________________________________
+4.)
+
+U relacijskom modelu, sta predstavlja relcijska shema, a sta relacija?
+Navedite osnovna svojstva relacije (2b)
+
+___________________________________________________________________________________________
+5.) 
+
+Uz pretpostavku da na relacijskoj shemi R = {A, B, C, D, E, F}, vrijedi skup funkcijskih 
+zavistnosti F = {E -> F, B -> DE, ADE -> C}, dokazati da vrijedi funkcijska zavisnost
+ABF -> CE.
+U svakom koraku dokaza navesti koji ste aksiom ili pravilo za izvodjenje funkcijskih 
+zavistnosti koristili. (2b)
+
+
+
+
+

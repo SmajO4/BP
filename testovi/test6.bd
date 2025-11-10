@@ -1,0 +1,168 @@
+16.11.2012. A
+1.)
+U bazi podataka DRZAVLJANI nalaze se relacije 
+
+DRZAVA                                                OSOBA
+* oznDrzava   CHAR   (oznaka drzave)                  * sifOsoba   INT   (sifra osobe)
+  nazDrzava   CHAR   (naziv drzave)                     imeOsoba   CHAR  (ime osobe)
+                                                        prezOsoba  CHAR  (prezime osobe)
+MJESTO                                                  oznDvorana CHAR  (oznaka drzave u kojoj je osoba rodjena)
+* oznDrzava   CHAR   (oznaka drzave)                    pbr        CHAR  (postanski broj mjesta u kojem je osoba rodjena)
+  pbr         CHAR   (postanski broj mjesta)            datRod     DATE  (datum rodjenja osobe, mora biti veci od datuma 12.10.1492)
+  nazMjesto   CHAR   (naziv mjesta)                   
+                                                      DRZAVLJANSTVO
+                                                      * sifOsoba   INT   (sifra osobe)
+                                                      * oznDrzava  CHAR  (oznaka drzave za koju je osoba stekla drzavljanstvo)
+                                                        datDrz     DATE  (datum kojeg je osoba stekla drzavljanstvo)
+
+Pretpostavlja se da jedna osoba drzavljanstvo jedne drzave moze imati samo jednom (to proizilazi iz kljuca
+relacije drzavljanstvo). Pretpostavlja se da niti jedan podatak u bazi ne moze poprimiti NULL vrijednost.
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak:
+
+  a) Ispisati popis osoba (sifru, prezime i ime) koje su bilo koje od svojih drzavljanstava drzava ciji naziv
+     pocinje suglasnikom a zavrsava samoglasnik stekle na svoj dvadeseti rodjendan. Prepostavlja se da u 
+     relaciji osoba ne postoji niti jedna osoba rodjena 29.februara (tak oda ne treba voditi racuna o tome
+     postojil li dvadeseti rodjendan takvih osoba). Svaka se osoba u popisu smije pojaviti najvise jednom.
+     Upotreba podupita nije dozvoljena. (2b)
+
+      SELECT DISTINCT o.sifOsoba,
+             o.prezOsoba,
+             o.imeOsoba
+      FROM OSOBA o
+      INNER JOIN DRZAVLJANSTVO dz
+          ON o.sifOsoba = dz.sifOsoba
+      INNER JOIN DRZAVA d
+          ON dz.oznDrzava = d.oznDrzava
+      WHERE SUBSTR(d.nazDrzava, 1, 1) NOT IN ('A','E','I','O','U','a','e','i','o','u')
+        AND SUBSTR(d.nazDrzava, LENGTH(d.nazDrzava), 1) IN ('A','E','I','O','U','a','e','i','o','u')
+        AND dz.datDrz = DATE_ADD(o.datRod, INTERVAL 20 YEAR);
+
+
+  b) Ispisati popis osoba (sifru, prezime i ime) koje su rodjene u drzavi pod nazivom Jugoslavija i imaju 
+     drzavljanstvo drzave pod nazivom USA (pri tome nije bitno imaju li drzavljanstvo neke druge drzave)
+     Upotreba podupita nije dozvoljena. (2b)
+
+       SELECT DISTINCT o.sifOsoba,
+         o.prezOsoba,
+         o.imeOsoba
+       FROM OSOBA o
+       INNER JOIN MJESTO m
+           ON o.oznDrzava = m.oznDrzava
+          AND o.pbr = m.pbr
+       INNER JOIN DRZAVA dRodj
+           ON m.oznDrzava = dRodj.oznDrzava
+       INNER JOIN DRZAVLJANSTVO dz
+           ON o.sifOsoba = dz.sifOsoba
+       INNER JOIN DRZAVA dCit
+           ON dz.oznDrzava = dCit.oznDrzava
+       WHERE dRodj.nazDrzava = 'Jugoslavija'
+           AND dCit.nazDrzava = 'USA';
+
+  c) Ispisati popis osoba (prezime, ime, starost osobe izrazenu u danima i naziv mjesta rodjenja) koje imaju
+     drzavljanstvo neke drzave koje nema niti jedna druga osoba. (2b)
+
+        SELECT DISTINCT o.prezOsoba,
+               o.imeOsoba,
+               DATEDIFF(CURDATE(), o.datRod) AS starostUDanima,
+               m.nazMjesto AS mjestoRodjenja
+        FROM OSOBA o
+        INNER JOIN MJESTO m
+            ON o.oznDrzava = m.oznDrzava
+           AND o.pbr = m.pbr
+        INNER JOIN DRZAVLJANSTVO dz
+            ON o.sifOsoba = dz.sifOsoba
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM DRZAVLJANSTVO dz2
+            WHERE dz2.oznDrzava = dz.oznDrzava
+              AND dz2.sifOsoba <> dz.sifOsoba
+        );
+
+      
+  d) Ispisati rang listu drzava prema broju izdatih drzavljanstava. Ispisativati oznaku drzave, naziv drzave,
+     broj drzavljanstva. Izlaze pocetku liste nalaze se drzave s vecim brojem drzavljanstava ispisivati samo
+     one drzave koje su izdale vise drzavljanstava nego sto je broj ljudi rodjenih u toj drzavi.
+     Drzave koje eventualno imaju jednak broj izdanih drzavljanstava, poredati abecedno u nazivu. (2b)
+
+         SELECT d.oznDrzava,
+           d.nazDrzava,
+           COUNT(dz.sifOsoba) AS brojDrzavljanstava
+         FROM DRZAVA d
+         INNER JOIN DRZAVLJANSTVO dz
+             ON d.oznDrzava = dz.oznDrzava
+         GROUP BY d.oznDrzava, d.nazDrzava
+         HAVING COUNT(dz.sifOsoba) >
+                (SELECT COUNT(*)
+                 FROM OSOBA o
+                 WHERE o.oznDrzava = d.oznDrzava)
+         ORDER BY brojDrzavljanstava DESC,
+                  d.nazDrzava ASC;
+
+_____________________________________________________________________________________________________________
+2.) 
+Jedna od karakteristika lose koncipiranog relacijskog modela je redundancija. Navedite anomalije koje se 
+pojavljuju zbog redundancije, te na vlastitom primjeru ilustrujte svaku od navedenih anomalija. (3b)
+
+_____________________________________________________________________________________________________________
+3.) 
+Relacijska shema AVIOTRANS sastoji se od sljedecih atributa:
+  - regBrAvion        - registarski broj aviona
+  - godProizv         - godina proizvodnje aviona
+  - interTV           - da li avion ima ugradjenu internu televiziju (0 - ne, 1 - da)
+  - sifTip            - sifra tipa
+  - nazTip            - naziv tipa aviona
+  - ukupTezPol        - ukupna dozvoljena tezina pri polijetanju za tip aviona
+  - sifLet            - sifra leta
+  - datLet            - datum obavljanja leta 
+  - vrijemePolet      - vrijeme polijetanja
+  - vrijemeSlet       - vrijeme slijetanja
+  - sifAerodr         - sifra aerodroma na koji se slijece na datom letu
+  - nazAerodr         - naziv aerodroma
+  - sifKategCijena    - sifra kategorije cijene karte
+  - nazKategCijene    - naziv kategorije cijene karte
+  - jmbg              - jmbg putnika 
+  - prezime           - prezime putnika
+  - ime               - ime putnika
+
+Pretpostavljeni kljuc relacije je sifLet (sifra leta).
+
+Let je identificiran sifrom i datumom leta (npr "OCJ763", 1.6.2006), a za let se evidentira na koji aerodrom
+avion slijece, te vrijeme polijetanja i vrijeme slijetanja. Jedan avion istog dana moze letjeti na vise letova.
+Na jednom letu leti samo jedan avion.
+
+Svaki avion je jednog tipa, a registarski broj za svaki avion je jedinstven.
+Putnik kupuje kartu tacno odredjene katerogije cijene za odredjeni let (npr "poslovna", "elektrosnka", 
+"s popustom za zaposlenika kompanije", "s popustom za osobe maldje od 27 godina", i td)
+Putnik ne moze za jedan let kupiti vise od jedne karte.
+
+Normalizirajte relaciju AVIOTRANS na:
+  a) 1NF (ostvariti prosirenjem kljuca)   (2b)  
+  b) 2NF                                  (2b)
+  c) 3NF                                  (2b)
+_____________________________________________________________________________________________________________
+4.)
+Navedite moguce strategije odrzavanja referencijskog integriteta pri brisanju n-torke. Koje od navedenih 
+strategija se ne smiju koristiti ukoliko se brise n-toorka ciji je primarni kljuc strani kljuc neke  
+druge relacije i ujedno dio njezinog primarnog kljuca? (3b)
+_____________________________________________________________________________________________________________
+5.)
+Zadane su relacije
+
+  r ( A   D )         a ( A   B   C )         t ( C    D )
+  -----------         ---------------         ------------
+      A   1               A  null null            5   null
+    null  1               B   4    1            null   2 
+      B   2             null  2    2              1    2 
+                                                  1    1
+
+Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati)
+
+  a) π_CD(r |><| a) ∩ t (1b) 
+  b) σ_AoD (a |><| t)   (1b)
+  c) ?                  (1b)
+_____________________________________________________________________________________________________________
+6.)
+Zadan je skup funkcijskih zavisnosti F = { A -> CD, AB -> E, D -> F }. 
+Dokazati da vrijedi funkcijska zavistnost AB -> EF. 
+U svakom koraku dokaza navedite aksiom ili pravilo koje ste koristili (2b)

@@ -1,0 +1,218 @@
+16.11.2021 B
+
+1.)
+U bazi podataka PRIJAVE nalaze se relacije (primarni kljucevi relacija su oznaceni sa *)
+
+STUD                                                VRSTA_PROVJ
+* mbrStud  INT    (maticni broj studenta)           * sifProvj       INT   (sifra vrste provjere) 
+  imeStud  CHAR   (ime studenta)                      nazivVrProvj   CHAR  (naziv vrste provjere, zavrsni ispit, medjuispit,..)
+  prezStud CHAR   (prezime studenta)                
+                                                    PROVJERA 
+NASTAVNIK                                           * datProvjera    DATE  (datum odrzavanja provjere)
+* sifNast   INT    (sifra nastavnika)               * sifPred        INT   (sifra predmeta iz kojeg se odrzava provjera) 
+  imeNast   CHAR   (ime nastavnika)                   sifVrProvj     INT   (sifra vrste provjere koja se odrzava)
+  prezNast  CHAR   (prezime nastavnika)               vrijemeProvj   TIME  (vrijeme pocetka provjere)
+                                                      trajanje       INT   (trajanje provjere u minutama) 
+PRED                                                  sifNast        INT   (sifra nastavnika koji obavlja provjeru) 
+* sifPred   INT    (sifra predmeta)                       
+  nazPred   CHAR   (naziv predmeta)                 PROVJERA 
+                                                    * datProvjera    DATE  (datum odrzavanja provjere)
+PREDAJE                                             * sifPred        INT   (sifra predmeta iz kojeg se odrzava provjera)
+* sifPred   INT    (sifra predmeta)                 * mbrStud        INT   (maticni broj studenta koji obavlja prijavu)
+* sifNast   INT    (sifra nstavnika)                  datPrijava     DATE  (datum kada je obavljena prijava)
+  nosilac   BOOL   (da li je nosilac predmeta)        vrijemePrijave TIME  (vrijeme kada je obavljena prijava)
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodenja.
+Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
+
+  a) Ispisati ukupan broj prijava koje su studenti obavili dva ili manje dana prije odrzavanja bilo kojeg 
+     zavrsnog ispita iz predmeta ciji naziv pocinje nekim od slova izmedju O i T i u nazivu ne sadrze cifru. (2b)
+
+       SELECT COUNT(*) AS brojPrijava
+       FROM PRIJAVA prj
+       INNER JOIN PROVJERA pr
+           ON prj.datProvjera = pr.datProvjera
+          AND prj.sifPred = pr.sifPred
+       INNER JOIN VRSTA_PROVJ vp
+           ON pr.sifVrProvj = vp.sifProvj
+       INNER JOIN PRED p
+           ON pr.sifPred = p.sifPred
+       WHERE vp.nazivVrProvj = 'zavrsni ispit'
+         AND p.nazPred >= 'O'
+         AND p.nazPred < 'U'            -- pokriva O, P, Q, R, S, T
+         AND p.nazPred NOT RLIKE '[0-9]'
+         AND DATEDIFF(pr.datProvjera, prj.datPrijava) BETWEEN 1 AND 2;
+
+
+  b) Za svaku provjeru koja ce se odrzati u bilo koju subotu u narednih 3 mjeseca (racunajuci od dana izvodjenja
+     upita) ispisati naziv predmeta, datum provjere, vrijeme pocetka provjere, ime i prezime nastavnika koji 
+     obavlja provjer u i ime i prezime nastavnika koji je nosilac na predmetu. (2b)
+
+       SELECT p.nazPred,
+         pr.datProvjera,
+         pr.vrijemeProvj,
+         n.imeNast      AS imeProvjerac,
+         n.prezNast     AS prezProvjerac,
+         n2.imeNast     AS imeNosilac,
+         n2.prezNast    AS prezNosilac
+       FROM PROVJERA pr
+       INNER JOIN PRED p
+           ON pr.sifPred = p.sifPred
+       INNER JOIN NASTAVNIK n
+           ON pr.sifNast = n.sifNast
+       INNER JOIN PREDAJE pd
+           ON p.sifPred = pd.sifPred
+          AND pd.nosilac = 1
+       INNER JOIN NASTAVNIK n2
+           ON pd.sifNast = n2.sifNast
+       WHERE pr.datProvjera >= CURDATE()
+         AND pr.datProvjera < DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
+         AND DAYOFWEEK(pr.datProvjera) = 7;      -- subota u MySQL-u
+
+
+  c) Ispisati naziv predmeta, datum odrzavanja i ime i prezime nastavnika koji obavlja provjeru za sve provjere 
+     kojima je trajanje duze od prosjecnog trajanja svih provjera na predmetima kojima je taj nastavnik odgovorni
+     nosilac. (2b)
+
+        SELECT p.nazPred,
+               pr.datProvjera,
+               n.imeNast,
+               n.prezNast
+        FROM PROVJERA pr
+        INNER JOIN PRED p
+            ON pr.sifPred = p.sifPred
+        INNER JOIN NASTAVNIK n
+            ON pr.sifNast = n.sifNast
+        WHERE pr.trajanje > (
+            SELECT AVG(pr2.trajanje)
+            FROM PREDAJE pd
+            INNER JOIN PROVJERA pr2
+                ON pr2.sifPred = pd.sifPred
+            WHERE pd.nosilac = 1
+              AND pd.sifNast = pr.sifNast
+        );
+
+
+____________________________________________________________________________________________________________________
+2.) 
+
+Objasniti pojam unijski kompatibilnih relacija. Za koje operacije relacije moraju biti unijski kompatibilne? (2b) 
+
+____________________________________________________________________________________________________________________
+3.) 
+
+Relacijska shema TRGOVACKI_LANAC se sastoji od sljedecih atributa:
+  - sifTrgovina       - sifra trgovine
+  - nazTrgovina       - naziv trgovine
+  - adresa            - adresa trgovine
+  - sifProizvod       - sifra proizvoda
+  - nazProizvod       - naziv proizvoda
+  - tezina            - neto iznos proizvoda
+  - sifVrProizvod     - sifra vrste proizvoda
+  - nazVrProizvod     - naziv vrste proizvoda (mlijecna cokolada, mlijeko, ribez,...)
+  - jedMjere          - jedinica mjere vrste proizvoda (litar, kilogram, komad,...)
+  - datum             - datum odredjivanja cijene proizvoda u jednoj trgovini
+  - cijena            - iznos odredjene cijena proizvoda u trogvini
+  - datPrvaNab        - datum od kada je proizvod u ponudi u jednoj trgovini
+  - kolicina          - trenutna kolicina proizvoda u jednoj trgovini 
+  - pbr               - postanski broj mjesta u kojem se nalazi trgovina
+  - nazMjesto         - nazim mjesta u kojem se nalazi trgovina
+
+Pretpostavljeni kljuc relacije je sifTrgovina (sifra trgovine). Cijena jednog proizvoda u jednoj 
+trgovini s moze mijenjati vise puta ali ne istog dana. 
+
+Normalizirajte relaciju TRGOVACKI_LANAC na 
+
+  a) 1NF (1NF ostvariti promjenom kljuca) (2b)
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+Rjesenje:
+
+1NF
+TRGOVINSKI_LANAC (
+  sifTrgovina, nazTrgovina, adresa,
+  sifProizvod, nazProizvod, tezina, sifVrProizvod, nazVrproizvod, jedMjere,
+  datum, cijena, datPrvaNab, kolicina, 
+  pbr, nazMjesto
+  )
+
+K_TRGOVINSKI_LANAC = {sifTrgovina, sifProizvod, datum}
+Zadovoljena je 1NF
+
+Ne postoje FZ:
+  sifTrgovina -/-> sifProizvod, datum, cijena, datPrvaNab, kolicina
+
+      jedna trgovina ima više proizvoda,
+      jedan proizvod više datuma cijene.
+
+2NF
+Postoje FZ:
+  sifTrgovina -> nazTrgovina, adresa, pbr, nazMjesto
+  sifProizvod -> nazProizvod, tezina, sifVrProizvod, jedMjere
+  sifTrgovina, sifProizvod -> datPrvaNab, kolicina
+  sifTrgovina, sifProizvod, datum -> cijena
+
+TRGOVINA (sifTrgovina, nazTrgovina, adresa, pbr, nazMjesto)
+  K_ = {sifTrgovina} -> ZADOVOLJENA 2NF
+
+PROIZVOD (sifProizvod, nazProizvod, tezina, sifVrProizvod, 
+          nazivVrsteProizvod, jedMjere)
+  K_ = {sifProizvod} -> ZADOVOLJENA 2NF
+
+PONUDA (sifTrgovina, sifProizvod, datPrvaNab, kolicina)
+  K_ = {sifTrgovina, sifProizvod} -> ZADOVOLJENA 2NF
+
+CIJENA (sifTrgovina, sifProizvod, datum, cijena)
+  K_ = {sifTrgovina, sifProizvod, datum} -> ZADOVOLJENA 2NF
+
+
+3NF
+Postoje TFZ
+  pbr -> nazMjesto
+  sifVrProizvod -> nazivVrsteProizvod, jedMjere
+
+TRGOVINA (sifTrgovina, nazTrgovina, adresa, pbr)
+  K_ = {sifTrgovina} -> ZADOVOLJENA 3NF
+
+MJESTO (pbr, nazMjesto)
+  K_ = {pbr}
+
+PROIZVOD (sifProizvod, nazProizvod, tezina, sifVrstaProizvod)
+  K_ = {sifProizvod} -> ZADOVOLJENA 3NF
+
+VRSTAPROIZVOD (sifVrstaProizvod, nazivVrsteProizvod, jedMjere)
+  K_ = {sifVrstaProizvod, nazivVrstaProizvod}
+
+PONUDA (sifTrgovina, sifProizvod, datPrvaNab, kolicina)
+  K_ = {sifTrgovina, sifProizvod} -> ZADOVOLJENA 3NF
+
+CIJENA (sifTrgovina, sifProizvod, datum, cijena)
+  K_ = {sifTrgovina, sifProizvod, datum} -> ZADOVOLJENA 3NF
+
+
+✅ Konačna shema u 3NF
+
+MJESTO(_pbr_, nazMjesto)
+
+TRGOVINA1(_sifTrgovina_, nazTrgovina, adresa, pbr)
+
+VRSTA_PROIZVODA(_sifVrProizvod_, nazVrProizvod, jedMjere)
+
+PROIZVOD2(_sifProizvod_, nazProizvod, tezina, sifVrProizvod)
+
+PONUDA(_sifTrgovina_, _sifProizvod_, datPrvaNab, kolicina)
+
+CIJENA(_sifTrgovina_, _sifProizvod_, _datum_, cijena)
+
+
+____________________________________________________________________________________________________________________
+4.) 
+Pod kojim uslovima se dekompozicija relacijske sheme obavlja bez gubitaka informacija? (2b)
+
+____________________________________________________________________________________________________________________
+5.) 
+Zadan je skup funkcijskih zavisnosti F = { A -> CD, AB -> E, D -> F }.
+Dokazati da vrijedi funkcijska zavisnost AB -> EF. 
+U svakom koraku dokaza navedie aksiom ili pravilo koje ste koristili. (2b)

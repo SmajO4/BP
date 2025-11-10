@@ -1,0 +1,485 @@
+2019 D
+2) Vrste spajanja (join) relacija (navedi i objasni)
+
+1. θ-spajanje (Theta join)
+
+    s = r1 |><| r2
+             θ
+
+    operandi - imena atributa iz r1 i r2, konstante
+    operatori -  =, ≠, <, >, ≤, ≥
+    
+    Obavljanjem operacije r1 |><| r2 dobija se relacija
+                               θ
+    koja sadrzi n-torke r1 x r2 za koje je vrijednost uslova
+    θ istina, odnosno
+
+    r1 |><| r2 = σ_θ(r1 x r2)
+         θ
+
+    VARIJANTE -> upotreba zareza (FROM WHERE)
+                 upotreba JOIN-a (JOIN ON)
+
+    PRIMJER: LINIJA (let, udaljenost)    AVION = (tip, dolet)
+             mogucnost = linija |><| avion
+                       udaljenost <= dolet
+
+2. Spajanje sa izjednačavanjem (Equi join)
+
+    Poseban slučaj θ-spajanja gdje je uslov samo jednakost (=).
+
+    Zadržava obje kolone koje učestvuju u poređenju.
+
+    PRIMJER: ROKOVI (sifIspit, nazPred, sala, datIspit)  SALE (oznaSala, nazSala, kapacitet)
+
+    rokUsali = rokovi |><| sale
+                sala = oznSala
+
+
+3. Prirodno spajanje (Natural join)
+
+    Obavlja se na osnovu jednakih vrijednosti istoimenih atributa.
+
+    i iz rezultata se izbacuju duplikati tih atributa 
+    (ostaje jedan zajednički stupac).
+
+    Prirodno spajanje relacija bez istoimenih atributa je jednako 
+    Dekartovom proizvodu
+
+    Prirodno spajanje se razlikuje od spajanja sa izjednacavanjem po
+    tome sto se istoimeni atributi iz dviju relacija izbacuju (tako da 
+    od svakog ostane samo po jedan).
+
+
+
+FROM clause se moze definirati na 2 nacina:
+
+  - Klasicna sintaksa (comma-delimitet) za spajanje relacija
+    
+    Koristi se za obavljanje:
+      Dekartovog proizvoda 
+      Spajanja uz uslov i izjednacavanje 
+      Prirodno spajanje
+
+  - ANSI sintaksa
+    
+    Koristi se za obavljanje:
+      Dekartovog proizvoda 
+        r CROSS JOIN s
+      Spajanja us uslov i izjednacavanje
+      Prirodno spajanje
+        r [INNER] JOIN s ON uslovSpajanja
+      Vanjsko spajanje:
+        uz uslov:
+        sa izjednacavanjem
+        prirodno vanjsko spajanje
+          r [LEFT | RIGHT | FULL] [OUTER] JOIN ON uslovSpajanja 
+      
+4) Relacijska shema vs relacija + svojstva relacije
+
+  Relacije 
+    Objekti u relacijskom modelu
+
+    Imenovana 2D tablica.
+
+    Označava se npr. student(STUDENT).
+
+      atribut je imenovana kolona relacije
+      domena je skup dozvoljenih vrijednosti atributa 
+      n-torka je red relacije
+
+
+  Relacijska shema 
+
+    Intenzija: ime relacije + skup atributa.
+    
+    Relacijska shema R (intenzija) je imenovani skup atributa:
+    R = {A1, A2,...,An} ili R = A1, A2,...,An 
+
+    Relacija r (ekstenzija) definisana nad relacijskom shemom R je
+    konacan skup n-torki, oznacava se s r(R) ili R(A1, A2,...,An) i 
+    predstavlja trenutnu vrijednost.
+
+    Npr. STUDENT(mbrStudent, prezimeStudent, imeStudent, prosjecnaOcjena).
+
+
+  Osnovna svojstva relacije:
+
+    Relacijska shema R: mijenja se relativno rijetko
+
+    Instanca relacije r: trenutna vrijednost relacije i cesto se mijenja
+
+    Ime relacije je jedinstveno u bazi.
+
+    Imena atrubita unutar relacija su jedinstvena.
+
+    Svaki atribut ima tačno jednu domenu.
+
+    Nema duplikata n-torki (relacija je skup).
+
+    Redoslijed n-torki nije bitan.
+
+    Redoslijed atributa nije bitan.
+
+
+  Karakteristike relacije:
+
+    Stepen (degree) - broj kolona 
+    Kardinalnost (cardinality) - broj n-torki
+
+2018 C
+2) Osnovne operacije relacijske algebre + unijski kompatibilne relacije
+
+  Osnovne operacije:
+
+    Unarne:
+
+      Selekcija (σ) – bira redove iz relacije prema uslovu.
+        primjer: σ(cijena > 10)(ARTIKL)
+
+      Projekcija (π) – bira kolone; uklanja duplikate.
+        π(nazArt, cijena)(ARTIKL)
+
+      Preimenovanje (δ) – mijenja imena atributa/relacije.
+
+      (+ agregacija, grupisanje – proširenja)
+
+    Binarne:
+
+      Unija (∪) – rezultat je relacija cije n-torke su elementi
+                  relacije r1 ili elementi relacije r2 ili 
+                  elementi obje relacije
+                  (n-torke koje su elementi obje relacije u 
+                   rezultatu se pojavljuju samo jednom)
+
+      Presjek (∩) – rezultat je relacija cije n-torke su elementi 
+                    relacije r1 i elementi relacije r2
+
+      Razlika (\) – n-torke u prvoj, koje nisu u drugoj.
+                    rezultat je relacija cije n-torke su elementi 
+                    relacije r1, i nisu elementi relacije r2
+
+
+      Dekartov proizvod (×) – kombinovanje (spajanje) svake n-torke prve iz realcije r1
+      sa svakom n-torkom iz druge relacije r2.
+
+      Dijeljenje (/) – “za sve” nad podskupom atributa.
+                       
+      Neka imamo: relacija R stepena n, i relaciju S, stepena m.
+      Neka se svi atributi od S pojavljuju i u R.
+      Rezultat diljenja R sa S, (R/S) je skup svih (n-m)-torki <x>
+      takvih da se n-torke <x,y> pojavljuju u R za sve m-torke <y> u S
+
+      Spajanje (⋈) – kombinacija × + σ, spajanje vezanih tupli.
+
+    Unijski kompatibilne relacije:
+
+    Potrebno za: unija, presjek, razlika.
+
+      Dvije relacije su unijski kompatibilne ako:
+
+        Imaju isti broj atributa - istog su stepena.
+
+        Korespondentni atributi su definisani nad istim domenama (1:1 preslikavanje).
+
+
+      Kod ocjene jesu li relacije unijski kompatibilne
+        
+        Poredak atributa nije bitan
+
+        Imena atributa nisu bitna
+
+      Dakle, dvije relacije koje imaju jednak broj atributa i jedana imena
+      atributa ne moraju biti ujedno unijski kompatibilne.
+
+
+3) Karakteristike loše koncipiranog modela + primjer
+
+  Karakteristike:
+
+    Redundancija podataka – isti podatak ponovljen na više mjesta.
+
+    Posljedice redundancije:
+
+      Anomalija unosa – ne možeš unijeti entitet dok se ne desi neka druga pojava.
+
+      Anomalija izmjene – promjena traži više izmjena; rizik nekonzistentnosti.
+
+      Anomalija brisanja – brisanjem jednog reda gube se i važni podaci.
+
+    Pojava lažnih n-torki – nakon spajanja nastaju kombinacije koje ne postoje u stvarnosti.
+
+
+  PRIMJER:
+  U okviru jedne narudzbe zelimo sacuvati dosta informacija u nasoj BP.
+  Ko mi salje, gdje se nalazi, kad je obavljena narudzba, koji broj i 
+  kolicina.
+
+  Zelim evidentirati sve neophodne atribute
+
+  Imam relaciju prodaja:
+  Prodaja:
+  (nazPreduz, mjesto, adresa, brNarudz, sifArtikl, nazArtikl, kol, datIspor)
+
+  Zelim napouniti ovo sa podacima koje imam:
+
+  Relacija prodaja
+(nazPreduz,     mjesto,  adresa,                brNarudz,  sifArtikl,  nazArtikl,        kol,   datIspor)
+---------------------------------------------------------------------------------------------------------
+Bingo-Sjenjak   Tuzla    I. Mujezinovića 24     116/18     111         Čokolada Dado     1500   10.10.
+Bingo-Sjenjak   Tuzla    I. Mujezinovića 24     116/18     222         Medeno srce       1150   10.10.
+Interex-Luke    Tuzla    I. Sarajlića 5         89/18      111         Čokolada Dado     1350   12.10.
+Interex-Luke    Tuzla    I. Sarajlića 5         89/18      333         Munchmallow       1400   12.10.
+Bingo-Sjenjak   Tuzla    I. Mujezinovića 24     137/18     111         Čokolada Dado     1600   15.10.
+---------------------------------------------------------------------------------------------------------
+Model nije dobar model baze podataka.
+
+Redundacnije:
+  Imamo podaci koji se ponavljaju.
+  Ponavlja se ime marketa, adresa marketa, naziv artikla, datum isporuke. 
+
+Anomalije unosa:
+  Ako zelim unijeti novi podatak u ovu relaciju, o nekom novom artiklu
+  ciji cemo biti zastupnik, ne mozemo to uraditi jer jos niko nije narucio
+  taj artikl od nas.
+
+  Kada unosimo novi podatak moramo unijeti i sve ostale podatke (koji se 
+  ponavljaju)
+
+Anomalije brisanja:
+  Ako market promijeni adersu, onda bi morali na svim mjestima gdje se 
+  pojavljuje adresa za taj marker, promijeniti adresu.
+
+Anomalija brisanja:
+  Ako zelim obrisati sve narudzbe o prodaji nekog artikla, gubim podatke
+  o tom artiklu.
+
+
+  Kratki vlastiti primjer:
+
+    PRODAJA(kupac, adresaKupca, sifArt, nazArt, kolicina)
+
+      Redundancija: isti kupac i adresa u više redova.
+
+      Anomalija izmjene: promjena adrese kupca → treba mijenjati u svim redovima.
+
+      Anomalija unosa: ne možeš upisati novi artikal dok nema prodaje.
+
+      Anomalija brisanja: obrišeš zadnju prodaju artikla → izgubi se info o artiklu.
+
+
+Zamjena za lose koncipiranu relacijsku shemu:
+
+  Proucavamo znacenja podataka
+  Proucavamo zavisnosti medju podacima.
+  Uvodimo ogranicenja koja su ovisna o semantici podataka.
+  Najvaznije su funkcijske zavisnosti:
+    
+2017 A
+2) Šta je model baze podataka? Tri modela (nivoa opisa)
+
+  Model baze podataka je apstraktni model cija je svrha opisati 
+  kako se podaci mogu efikasno struktuirati, koristiti i predstavljati.
+
+  Definise elemente podataka i vezu medju njima.
+
+  Sastoji se od skupa objekata, skupa operacija koje se provode nad tim 
+  objektima i skupa integracijskih ogranicenja.
+
+  Tri nivoa (ANSI/SPARC):
+
+  1. Koneptualni nivo - opisuje se konceptualna (logicka) shema
+      
+      sadrzi opis svih entiteta i veza, atributa, domena i 
+      integritetskih ogranicenja.
+
+      Moze se opisati koristenjem modela podataka npr ER model
+    
+  2. Unutarnji nivo - opsiuje se interna shema  
+
+      opisuje detalje fizicke strukture pohrane i metode pristupa 
+      podacima:
+        kako su podaci pohranjeni i koje se metode korsite za 
+        pristup podacima.
+
+  3. Vanjski nivo - opisuje se eksterna shema
+
+      opisuje "pogled" na dio baze podataka koji je namijenjen 
+      specificnoj grupi korisnika
+
+      osnova za opis eksternih shema je konceptualna shema
+
+
+2021 B
+2) Unijski kompatibilne relacije + za koje operacije
+
+  Unijski kompatibilne relacije:
+
+    Relacije r(R) i s(S) su unijski kompatibilne ako:
+
+      imaju isti broj atributa, i
+
+      postoji preslikavanje atributa R ↔ S tako da su odgovarajući atributi nad istim domenama.
+
+  Za koje operacije:
+
+    Obavezno za:
+
+      uniju (∪),
+      presjek (∩),
+      razliku (\).
+
+
+4) Uslovi za dekompoziciju bez gubitka informacija
+
+Relacija se bez gubitaka razlaze na dvije projekcije ako:
+  projekcije imaju zajednicke atribute
+  zejdnicki atributi su kljuc u barem jednoj od projekcija 
+
+
+Dekompozicija relacije R na R1 i R2 je bez gubitaka ako:
+
+   1. R1 ∩ R2 ≠ ∅ (imaju zajedničke atribute),
+
+   2. Zajednički atributi su ključ barem jedne od projekcija R1 ili R2.
+
+(Generalno: prirodnim spajanjem projekcija se dobije originalna relacija.)
+
+2011
+4) Vrste tablica (relacija) u relacijskim bazama podataka
+
+  Tipična podjela:
+
+    1. Osnovne (bazne) relacije
+
+       Fizički pohranjene tabele; sadrže stvarne podatke.
+
+    2. Izvedene relacije (pogledi / views)
+
+       Nisu fizički pohranjene; rezultat upita nad drugim relacijama.
+
+    3. Pomoćne / šifrarske / kodne relacije
+
+        Male tabele sa šiframa i opisima (npr. GRAD(postBr, nazivGrad)), služe za referenciranje i očuvanje integriteta.
+
+2012
+2) Redundancija → anomalije + vlastiti primjer
+
+  Anomalije zbog redundancije:
+
+    1. Anomalija unosa
+    2. Anomalija izmjene
+    3. Anomalija brisanja
+
+Primjer (jedna tabela):
+
+STUDENT(matBr, ime, prezime, sifPred, nazPred, ocjena)
+
+Unos: ne možeš unijeti novi predmet sifPred, nazPred dok ga neki student ne polaže.
+
+Izmjena: promjena naziva predmeta traži izmjenu u svim redovima gdje se pojavljuje.
+
+Brisanje: ako obrišeš zadnji red za neki predmet, gubiš podatke da taj predmet postoji.
+
+2) Specifične operacije relacijske algebre (kratko)
+
+  Selekcija (σ) – bira redove koji zadovoljavaju uslov.
+
+  Projekcija (π) – bira kolone; uklanja duplikate.
+
+  Unija (∪) – sve n-torke koje su u barem jednoj od dvije unijski kompatibilne relacije.
+
+  Presjek (∩) – n-torke zajedničke objema unijski kompatibilnim relacijama.
+
+  Razlika (\) – n-torke koje su u prvoj, a nisu u drugoj unijski kompatibilnoj relaciji.
+
+  Dekartov proizvod (×) – kombinacija svake n-torke prve sa svakom n-torkom druge.
+
+  Spajanje (⋈) – povezuje relacije na osnovu uslova; praktično selekcija nad Dekartovim proizvodom.
+
+  Dijeljenje (/) – pronalazi vrijednosti koje su u vezi sa svim vrijednostima iz druge relacije.
+
+  Preimenovanje (δ) – mijenja naziv relacije ili atributa.
+
+  Agregacija / grupisanje – COUNT, SUM, AVG, MIN, MAX po relaciji ili grupama.
+
+
+Unijski kompatibilne relacije:
+Dvije relacije su unijski kompatibilne ako:
+
+imaju isti broj atributa,
+
+odgovarajući atributi su nad istim domenama (tj. istog tipa i značenja).
+
+🔹 Operacije za koje relacije moraju biti unijski kompatibilne:
+
+Unija (∪)
+
+Presjek (∩)
+
+Razlika (−)
+
+
+
+
+Dekompozicija relacijske sheme bez gubitaka informacij.
+
+Dekompozicija relacije R na R1 i R2 je bez gubitaka informacije ako:
+
+  1. Relacije R1 i R2 imaju zajednicke atribute i 
+  2. Ti zajednicki atributi su kljuc u barem jednoj od relacija R1 ili R2.
+
+  Tada vrijedi:
+    r(R) = πR1(r) |><| πR2(r)
+
+  odnosno, spajanjem projekcija dobija se originalna relacija.
+
+
+
+
+
+Anomalija unosa + redundancija
+
+PRODAJA(kupac, adresaKupca, sifArt, nazArt, cijena, kolicina)
+
+| kupac | adresaKupca      | sifArt | nazArt | cijena | kolicina |
+| ----- | ---------------- | ------ | ------ | ------ | -------- |
+| Marko | Sarajevo, Titova | A1     | Kafa   | 5.00   | 3        |
+| Marko | Sarajevo, Titova | A2     | Šećer  | 2.50   | 2        |
+| Ivana | Tuzla, Slatina   | A1     | Kafa   | 5.00   | 1        |
+
+🔸 Anomalija unosa:
+
+Ne možemo unijeti novog kupca koji još nije ništa kupio,
+jer bi sifArt, nazArt, cijena, kolicina morali imati neku vrijednost (a nemamo prodaju).
+
+👉 Npr. želimo dodati kupca “Petar”, ali on još nije kupio ništa —
+to nije moguće bez izmišljene narudžbe.
+
+
+🔸 Ostale nepravilnosti (za kompletnost):
+
+Redundancija: adresa kupca i cijena artikla se ponavljaju u više redova.
+
+Anomalija izmjene: ako Marko promijeni adresu, mora se promijeniti u svim redovima.
+
+Anomalija brisanja: ako obrišemo zadnju prodaju artikla A1, gubimo i podatak o samom artiklu.
+
+
+
+
+Relacijska shema je u 1 NF ako:
+ neključni atributi funkcijski ovise o ključu
+ domene sadrže samo jednostavne (nedjeljive) vrijednosti
+ vrijednost svakog atributa je samo jedna vrijednost iz domene
+tog atributa
+
+
+Relacijska shema R je u 2 NF ako je u 1 NF i ako je:
+ Svaki atribut iz zavisnog dijela potpuno funkcijski ovisan o
+ključu
+
+
+Relacija (relacijska shema) je u 3 NF ako je u 1 NF i ako:
+ niti jedan atribut iz zavisnog dijela nije tranzitivno funkcijski
+ovisan o ključu
