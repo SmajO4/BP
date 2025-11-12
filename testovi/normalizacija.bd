@@ -258,3 +258,376 @@ OCJENA (sifUcenik, sifPredmet, ocjena)
 NASTAVNIK (sifNastavnik, imeNastavnik, prezNastavnik)
 
 RAZRED (rbrRazred, oznRazred, sifNastavnik, brojUcenika)
+
+
+
+
+2023
+Relacijska shema PROGNOZA sastoji se od sljedecih atributa:
+  
+  - sifStanica        - sifra meteroloske stanice
+  - nazivStanica      - naziv meteroloske stanice
+  - nadVisina         - nadmorska visina na kojoj se nalazi stanica
+  - pbr               - postanski broj mjesta u kojem se nalazi stanica
+  - nazMjesto         - naziv mjesta u kojem se nalazi stanica 
+  - datum             - datum obavljanog mjerenja
+  - sat               - vrijeme (sat) obavljenog mjerenja
+  - oznMjerenja       - oznaka vrste obavljenog mjerenja 
+                        (TEMP, PRIT, PAD,...)
+  - nazMjerenja       - naziv vrste obavljenog mjerenja 
+                        (temperatura, pritisak padavine, ...)
+  - jedinicaMjer      - jedinica u kojoj se izrazava vrsta mjerenja
+  - kolicina          - iznos obavljenog mjerenja
+  - sifMeterolog      - sifra meterologa koji je izvrsio mjerenje
+  - prez              - prezime meterologa
+  - ime               - ime meterologa
+
+Pretpostavljeni kljuc relacije je sifStanica (sifra meteroloske stanice).
+Mjerenja (svake vrste) se obavljaju svakog punog sata (0, 1, 2, ...,23), 
+svakog dana na svakoj stanici.
+Svako konkretno mjerenje obavlja samo jedan meterolog, a razliciti 
+meterolozi mogu obavljati istovremeno razlicita mjerenja na jednoj 
+stanici.
+U jednom mjestu moze biti stacionarno vise meteroloskih stanica.
+
+Normalizirati relaciju PROGNOZA na:
+a) 1NF (1NF ostvariti promjenom kljuca) (2b)
+b) 2NF                                  (3b)
+c) 3NF                                  (3b)
+-----------------------------------------------------------------------------
+
+Stanica (sifStanica, nazivStanica, nadVisina, pbr, nazMjesto,
+         datum, sat, oznMjerenja, nazMjerenja, jedinicaMjer, kolicina
+         sifMeterolog, prez, ime)
+
+
+K_stanica = {sifStanica}
+
+
+sifStanica, datum, sat, oznMjerenja -> kolicina, sifMeterolog
+
+Postoje fz:
+
+sifStanica -> nazivStanica, nadVisina, pbr, nazMjesto
+
+Ne postoje fz:
+
+sifStanica -> datum, sat, oznMjerenja, nazMjerenja, jedinicaMjer, kolicina,
+              sifMeterolog, prez, ime
+
+
+Nije zadovoljena 1NF
+
+
+Novi kljuc:
+K_Stanica = { sifStanica, datum, sat, oznMjerenja }
+
+Zadovoljena je 1NF
+
+2NF
+
+K_Stanica = { sifStanica, datum, sat, oznMjerenja }
+
+
+sifStanica -> nazivStanica, nadVisina, pbr, nazMjesto
+
+oznMjerenja -> nazMjerenja, jedinicaMjer
+
+sifStanica, datum, sat, oznMjerenja -> sifMeterolog, ime, prez, kolicina
+
+
+
+Stanica1 (sifStanica, nazivStanica, nadVisina, pbr, nazMjesto)
+          ----------
+
+Mjerenje (oznMjerenja, nazMjerenja, jedinicaMjer)
+          -----------
+
+Izmjereno (sifStanica, datum, sat, oznMjerenja, sifMeterolog, 
+           ----------  -----  ---  -----------
+           ime, prez, kolicina)
+
+Zadovoljena je 2NF.
+
+3NF
+
+pbr -> nazMjesto 
+sifMeterolog -> ime, prez
+
+
+Stanica1 (sifStanica, nazivStanica, nadVisina, pbr)
+          ----------
+
+Mjesto (pbr, mjesto)
+
+Mjerenje (oznMjerenja, nazMjerenja, jedinicaMjer)
+          -----------
+
+Izmjereno (sifStanica, datum, sat, oznMjerenja, sifMeterolog, kolicina)
+           ----------  -----  ---  -----------
+
+Meterolog (sifMeterolog, ime, prez)
+
+
+
+
+Zadana je relacijska shema FILM sa slijedećim atributima:
+
+   SifFilm - šifra filma
+   NasFilm - naslov filma
+   OznZanr - oznaka žanra
+   OpisZanr - opis (naziv) žanra
+   SifProizv - šifra proizvođača filma
+   NazProizv - naziv proizvođača filma
+   SifDistrib - šifra distributera filma
+   NazDistrib - naziv distributera filma
+   SifOso - šifra osobe
+   PrezOso - prezime osobe
+   ImeOso - ime osobe
+   KratFun - kratica funkcije koju osoba ima u filmu
+   NazFun - naziv funkcije koju osoba ima u filmu (glumac, režiser, ...)
+
+Jedan film ima jednog proizvođača
+Jedan film ima jednog distributera
+Jedna osoba može imati različite funkcije u istom filmu
+U jednom filmu različite osobe mogu imati iste funkcije 
+(više glumaca, scenarista ...)
+
+
+
+film (sifFilm, nasFilm, oznZanr, opisZanr, sifProizv, nazProizv,
+      sifDistrib, nazDistrib, sifOso, prezOso, imeOso, kratFun, nazFun)
+
+pp kljuc:
+
+k_film = { sifFilm }
+ 
+Postoje fz:
+
+sifFilm -> nasFilm, oznZanr, opisZanr, sifProizv, nazProizv, 
+           sifDistrib, nazDistrib
+
+sifFilm -/-> sifOso, prezOso, imeOso, kratFun, nazFun
+
+
+
+k_film = { sifFilm, sifOso, kratFun }
+
+Zadovoljena je 1NF
+
+2NF
+
+siffilm -> nasfilm, oznzanr, opiszanr, sifproizv, nazproizv, 
+           sifdistrib, nazdistrib
+
+
+sifOso -> prezOso, imeOso
+
+kratFun -> nazFun
+
+
+
+film1 ( siffilm, nasfilm, oznzanr, opiszanr, sifproizv, nazproizv, 
+        sifdistrib, nazdistrib )
+
+osoba ( sifOso, prezOso, imeOso )
+
+funk1 (sifFilm, sifOso, kratFun)
+
+funk2 (kratFun, nazFun)
+
+
+
+3NF
+
+oznZanr -> opisZanr 
+sifProizv -> nazProizv
+sifDistrib -> nazDistrib
+
+
+film1 ( siffilm, nasfilm, oznzanr, sifproizv, sifdistrib )
+
+zanr (oznZanr, opisZanr)
+
+proizvodjac (sifProizv, nazProizv)
+
+distribucija (sifDistrib, nazDistrib)
+
+osoba (sifOso, prezOso, imeOso)
+
+funk1 (sifFilm, sifOso, kratFun)
+
+funk2 (kratFun, nazFun)
+
+
+Konacna relaciaj FILM (-|-)
+
+
+
+
+Relacijska shema PROMET sastoji se od slijedećih atributa:
+
+   Lin - broj linije na kojoj se odvija promet
+   SifPrij - šifra prijevoznika (preduzeća)
+   NazPrij - naziv prijevoznika
+   SifAut - šifra autobusa – određuje je prijevoznik
+   TipAut - tip autobusa
+   BrSjed - broj sjedišta
+   SifOdr - šifra mjesta šifra mjesta – odredišta odredišta
+   NazOdr - naziv mjesta – odredišta
+   DatPol - datum polaska
+   VrijPol - vrijeme polaska
+   TrVoz - Trajanje vožnje
+   BrKart - broj prodanih karata
+
+Pretpostavljani ključ je šifra linije. Normalizirajte relacijsku shemu 
+PREVOZ na 1 NF, 2 NF, 3 NF. 
+
+Šifru autobusa određuje prijevoznik – mogu postojati različiti autobusi
+različitih prijevoznika koji imaju istu šifru. 
+
+Autobusi istog tipa imaju jednak broj sjedišta. 
+
+Linija određuje odredište, vrijeme polaska i trajanje vožnje. 
+Istog dana na istoj liniji može saobraćati više autobusa 
+(istog ili različitog prijevoznika).
+
+
+linija ( Lin, sifPrij, nazPrij, sifAut, tipAut, brSjed, 
+         sifOdr, nazOdr, datPol, vrijPol, trVoz, brKart )
+
+Pp kljuc
+
+K_linija = { Lin }
+
+
+Lin -> sifOdr, nazOdr, vrijPol, trVoz
+
+Lin -/-> sifPrij, nazPrij, sifAut, tipAut, brSjed, datPol, brKart
+
+Nije zadovoljena 1NF
+
+Novi kljuc:
+
+K_linija = { Lin, sifPrij, sifAut, datPol }
+
+Zadovoljena je 1NF
+
+
+2NF
+
+linija ( Lin, sifOdr, nazOdr, vrijPol, trVoz)
+         ---  
+
+tip (sifPrij, sifAut, tipAut, brSjed)
+     -------  ------
+
+prijevoznik (sifPrij, nazPrij)
+             ------- 
+
+brkarata (Lin, sifPrij, sifAut, datPol, brKart)
+          ---  -------  ------  ------
+
+
+3NF
+
+linija ( Lin, sifOdr, vrijPol, trVoz)
+         ---
+
+odrediste (sifOdr, nazOdr)
+
+
+-------  ------
+tip (sifPrij, sifAut, tipAut)
+
+tip2 (tipAut, brSjed)
+
+
+prijevoznik (sifPrij, nazPrij)
+             ------- 
+
+brkarata (Lin, sifPrij, sifAut, datPol, brKart)
+          ---  -------  ------  ------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
