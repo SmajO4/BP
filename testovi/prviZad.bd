@@ -1,0 +1,237 @@
+1.) 12. 11. 2019
+U bazi podataka trgovinskiLanac kreirane su relacije pomocu prikazanih naredbi
+
+    CREATE TABLE trgovina  (         CREATE TABLE proizvodUTrgovini (
+      sifTrgovina   INTEGER             sifTrgovina   INT
+      nazivTrgovina CHAR NOT NULL       sifProizvod   INT
+      adresaTrgovina                    datum         DATE
+    );                                  cijena        DECIMAL
+                                          
+    CREATE TABLE proizvod (          CREATE TABLE dvnevnik (
+      sifProizvod     INTEGER           sifTrgovina INT
+      nazivProizvod   CHAR              sifProizvod INT
+    );                                  datum
+                                        cijena 
+                                     );
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak.
+
+Upiti moraju biti neovisni o datumu izvodjenja
+Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
+
+    a) Ispisati broj razlicitih proizvoda u trgovinama ciji naziv pocinje slovima 
+    od M do P, a zavrsava suglasnikom i kojima su cijene postavljene prije vise 
+    od pola godine. (2b)
+
+    b) Za svaku trgovinu ispisati naziv trgovine, adresu i naziv trenutno 
+    najskupljeg proizvoda u toj trgovini (pretpostaviti da postoji samo jedan
+    takav proizvod) (2b)
+
+    c) Ispisati naziv trgovine i naziv proizvoda u toj trgovini koji niti jednom 
+    nisu promijenili cijenu u nekakvoj drugoj trgovini. (2b)
+
+
+1.) 13.11.2018 
+U bazi podataka kreirane su tablice:
+
+LUKA                                      PLOVIDBA 
+  sifLuka     INTEGER   (sifra luke)        regBrBrod       CHAR    (registarski broj broda)
+  nazLuka     CHAR      (naziv luke)        datPolaska      DATE    (datum polaska broda)
+                                            sifLukaOd       INT     (sifra luke iz koje brod polazi (isplovava))
+                                            sifLukaDo       INT     (sifra luke u koju brod dolazi (uplovaljava))
+                                            datDolaska      DATE    (datum dolaska broda u luku u koju plovi)
+                                            ukUkrcTezina    INT     (ukupna na broj ukrcana tezina tereta na toj plovidbi)
+BROD
+  regBrBrod       CHAR    (registarski broj broda)
+  imeBrod         CHAR    (ime broda)
+  nosivost        INT     (najveca ukupna tezina koju brod moze ukcrati u t)
+  sifMaticLuka    INT     (sifra maticne luke broda (luka u kojoj je registrovan))
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodnjenja.
+Ne prihvataju se rjesenja gdje se nepotrebno koriste podupiti
+
+  a) Ispisati registarske brojeve i imena brodova koji su plovidbu zapoceli u toku posljednjih 10 dana 
+     i u odredisnu luku nece uploviti barem jos 3 dana (2b)
+
+  b) Ispistai registarske brojeve i imena brodova koji su iz luke Rijeka u luku New York barem jednom
+     prevozili teret ukupne ukrcane tezine vece od 200t. Svaki brod se u listi smije pojviti 
+     najvise jednom. (2b)
+
+  c) Ispisati registarski broj i ime brodova u obliku "regBrBrod-imeBrod" koji prosle godine nijednom
+     nisu isplovljavali iz svoje maticne luke (2b)
+
+
+1.) 9.11.2017
+VOZAC                                                               TERET
+  sif_vozac   INT       (sifra vozaca)                                sif_teret   SMALLINT    (sifra tereta)
+  prez_vozac  CHAR      (prezime vozaca)                              naz_teret   CHAR        (naziv tereta)
+  ime_vozac   CHAR      (ime vozaca)                                  tezina      SMALLINT    (tezina tereta u tonama)
+
+VOZNJA                                                              VOZILO 
+  sif_voznja  INT       (sifra voznje)                                regbr       CHAR    (registarski broj vozila)
+  sif_vozac   INT       (sifra vozaca)                                tip         CHAR    (tip vozila)
+  sif_teret   SMALLINT  (sifra tereta)                                nosivost    DECIMAL (nosivost vozila u tonama)
+  datum       DATE      (datum obavljanja prevoza)
+  regbr       CHAR      (registarski broj vozila)                   LOKACIJA 
+  broj_km     SMALLINT  (broj predjenih (prevezenih) kilometara)      sif_lok     INT     (sifra lokacije)
+  sif_lok_od  INT       (sifra lokacije od koje se prevozi teret)     naz_lok     CHAR    (naziv lokacije)
+  sif_lok_do  INT       (sifra lokacije do koje se prevozi teret)     adresa      CHAR    (adresa na kojoj se lokaciji nalazi)
+                                                                      grad        CHAR    (grad u kojem se lokacija nalazi)
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodjenja.
+
+  a) Ispisati popis vozaca (ime i prezime) koji su u posljednjem tromjesecju prosle godine obavili bar jednu
+     voznju u vozilima ciji tip sadrzi rijec "MERCEDES", a ne sadrzi cifru. Svaki takav vozac se u popisu
+     treba naci samo jednom. (2b)
+
+  b) Ispisati broj voznji, ukupan broj predjenih kilometara i prosjecnu tezinu tereta oavljene vozilima 
+     nosivosti izmedju 5 i 10t, a koje su krenule iz gradova ciji nazivi pocinju slovima od K do P i ne 
+     zavrsavaju samoglasnikom. (2b)
+
+  c) Ispisati ime i prezime vozaca, registarski broj i tip vozila za voznje koje su proslog mjeseca 
+     obavljene izmedju lokacija koje se ne nalaze u istom gradu (2b)
+
+
+1.) 16.11.2021
+U bazi podataka PRIJAVE nalaze se relacije (primarni kljucevi relacija su oznaceni sa *)
+
+STUD                                                VRSTA_PROVJ
+* mbrStud  INT    (maticni broj studenta)           * sifProvj       INT   (sifra vrste provjere) 
+  imeStud  CHAR   (ime studenta)                      nazivVrProvj   CHAR  (naziv vrste provjere, zavrsni ispit, medjuispit,..)
+  prezStud CHAR   (prezime studenta)                
+                                                    PROVJERA 
+NASTAVNIK                                           * datProvjera    DATE  (datum odrzavanja provjere)
+* sifNast   INT    (sifra nastavnika)               * sifPred        INT   (sifra predmeta iz kojeg se odrzava provjera) 
+  imeNast   CHAR   (ime nastavnika)                   sifVrProvj     INT   (sifra vrste provjere koja se odrzava)
+  prezNast  CHAR   (prezime nastavnika)               vrijemeProvj   TIME  (vrijeme pocetka provjere)
+                                                      trajanje       INT   (trajanje provjere u minutama) 
+PRED                                                  sifNast        INT   (sifra nastavnika koji obavlja provjeru) 
+* sifPred   INT    (sifra predmeta)                       
+  nazPred   CHAR   (naziv predmeta)                 PROVJERA 
+                                                    * datProvjera    DATE  (datum odrzavanja provjere)
+PREDAJE                                             * sifPred        INT   (sifra predmeta iz kojeg se odrzava provjera)
+* sifPred   INT    (sifra predmeta)                 * mbrStud        INT   (maticni broj studenta koji obavlja prijavu)
+* sifNast   INT    (sifra nstavnika)                  datPrijava     DATE  (datum kada je obavljena prijava)
+  nosilac   BOOL   (da li je nosilac predmeta)        vrijemePrijave TIME  (vrijeme kada je obavljena prijava)
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovisni o datumu izvodenja.
+Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
+
+  a) Ispisati ukupan broj prijava koje su studenti obavili dva ili manje dana prije odrzavanja bilo kojeg 
+     zavrsnog ispita iz predmeta ciji naziv pocinje nekim od slova izmedju O i T i u nazivu ne sadrze cifru. (2b)
+
+  b) Za svaku provjeru koja ce se odrzati u bilo koju subotu u narednih 3 mjeseca (racunajuci od dana izvodjenja
+     upita) ispisati naziv predmeta, datum provjere, vrijeme pocetka provjere, ime i prezime nastavnika koji 
+     obavlja provjer u i ime i prezime nastavnika koji je nosilac na predmetu. (2b)
+
+  c) Ispisati naziv predmeta, datum odrzavanja i ime i prezime nastavnika koji obavlja provjeru za sve provjere 
+     kojima je trajanje duze od prosjecnog trajanja svih provjera na predmetima kojima je taj nastavnik odgovorni
+     nosilac. (2b)
+
+1.) 7.12.2011
+Medju ucenicima koji zavrsavaju srednju skolu i zele se upisati na fakultet provedena je anleta.
+U bazi podataka nalaze se relacije:
+
+MJESTO                                                                    UCENIK 
+* pbr        INT      (postanski broj)                                    * jmbg        CHAR   (JMBG ucenika)
+  nazMjesto  VARCHAR  (naziv mjesta)                                        prezUcenik  NCHAR  (prezime ucenika)
+                                                                            imeUcenik   NCHAR  (ime ucenika)
+SKOLA                                                                       sifSkola    INT    (sifra srednje skole koju ucenik pohadja)
+* sifSkola   INT      (sifra skole)                                         sifFakultet INT    (sifra fakulteta na kojeg se ucenik zeli upisati)
+  nazSkola   VARCHAR  (naziv skole)                                         opciUspjeh  SMINT  (opci uspjeh)
+  pbrSkola   INT      (postanski broj mjesta u kojem se skola nalazi)
+
+FAKULTET 
+* sifFakultet     INT      (sifra fakulteta)
+  nazFakultet     VARCHAR  (naziv fakulteta) 
+  pbrFakultet     INT      (postanski broj mjesta u kojem se nalazi fak)
+  adresaFakultet  VARCHAR  (adresa fakulteta)
+
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak:
+  
+  a) Ispisati ukupan broj i prosjecan opci uspjeh ucenika koji pohadjaju srednju skolu u mjestima 
+     ciji naziv zapocinje slovima S do Z. (2b)
+
+  b) Ispisati JMBG, ime i prezime ucenika, naziv mjesta srednje skole i mjesta fakulteta za ucenkike
+     koji ne pohadjaju srednju skolu u istom mjestu u kojem se nalazi fakultet na kojeg se zele upisati.
+     Ne koristiti podupite! (2b)
+
+1.) 16.11.2012
+U bazi podataka DRZAVLJANI nalaze se relacije 
+
+DRZAVA                                                OSOBA
+* oznDrzava   CHAR   (oznaka drzave)                  * sifOsoba   INT   (sifra osobe)
+  nazDrzava   CHAR   (naziv drzave)                     imeOsoba   CHAR  (ime osobe)
+                                                        prezOsoba  CHAR  (prezime osobe)
+MJESTO                                                  oznDvorana CHAR  (oznaka drzave u kojoj je osoba rodjena)
+* oznDrzava   CHAR   (oznaka drzave)                    pbr        CHAR  (postanski broj mjesta u kojem je osoba rodjena)
+  pbr         CHAR   (postanski broj mjesta)            datRod     DATE  (datum rodjenja osobe, mora biti veci od datuma 12.10.1492)
+  nazMjesto   CHAR   (naziv mjesta)                   
+                                                      DRZAVLJANSTVO
+                                                      * sifOsoba   INT   (sifra osobe)
+                                                      * oznDrzava  CHAR  (oznaka drzave za koju je osoba stekla drzavljanstvo)
+                                                        datDrz     DATE  (datum kojeg je osoba stekla drzavljanstvo)
+
+Pretpostavlja se da jedna osoba drzavljanstvo jedne drzave moze imati samo jednom (to proizilazi iz kljuca
+relacije drzavljanstvo). Pretpostavlja se da niti jedan podatak u bazi ne moze poprimiti NULL vrijednost.
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak:
+
+  a) Ispisati popis osoba (sifru, prezime i ime) koje su bilo koje od svojih drzavljanstava drzava ciji naziv
+     pocinje suglasnikom a zavrsava samoglasnik stekle na svoj dvadeseti rodjendan. Prepostavlja se da u 
+     relaciji osoba ne postoji niti jedna osoba rodjena 29.februara (tak oda ne treba voditi racuna o tome
+     postojil li dvadeseti rodjendan takvih osoba). Svaka se osoba u popisu smije pojaviti najvise jednom.
+     Upotreba podupita nije dozvoljena. (2b)
+
+
+  b) Ispisati popis osoba (sifru, prezime i ime) koje su rodjene u drzavi pod nazivom Jugoslavija i imaju 
+     drzavljanstvo drzave pod nazivom USA (pri tome nije bitno imaju li drzavljanstvo neke druge drzave)
+     Upotreba podupita nije dozvoljena. (2b)
+
+  c) Ispisati popis osoba (prezime, ime, starost osobe izrazenu u danima i naziv mjesta rodjenja) koje imaju
+     drzavljanstvo neke drzave koje nema niti jedna druga osoba. (2b)
+      
+
+1.) 9.11.2017
+
+    U bazi podataka BIBLIOTEKA nalaze se relacije (primarni kljucevi su oznaceni) 
+
+    KNJIGA      STUDENT      PREDMET
+    *sifKnj     *JMBG        *sifPred
+    naslov      ime          nazPred
+    cijena      prezime
+
+    LITERATURA 
+    *sifPred
+    *sifKnj 
+    rbr             redni broj vaznosti literature za predmet (za svaki predmet krece od 1)
+    obavezna        D-obavezna literatura, N-neobavezna literatura
+
+    POSUDBA 
+    *JMBG
+    *sifKnj         
+    datumPos       rok vracanja knjige (datum do kojeg studenta mora vratiti knjgu)
+    datumVra       datum vracanja knjige
+
+
+    Napisati po jedan SQL upit za svaki od zadatka.
+    Upiti moraju biti neovisni o datumu izvodjenja.
+
+    a) Za svaki predmet ciji naziv sadrzi rijec "osnovi" i zavrsava samoglasnikom 
+    ispisati obaveznu literaturu.
+    Potrebno je ispisati naziv predmeta, naziv knjige te oznaku (niz znakova) 
+    sastavljenu od prva tri znaka naslova knjige i sifre predmeta (npr. ako je za
+    predmet sa sifrom 1000 obavezna knjiga 'Baze podataka' ispisat ce se 
+    'Baz1000') (2b)
+
+    b) Ispisati ukupnu i prosjecnu vrijednost svih knjiga koje su posudjene u 
+    proslom mjesecu, a nisu vracene na vrijeme.
+    Kao naslov za izracunatu ukupnu i prosjecnu vrijednost u izlaznoj se listi
+    pojavljuje tekst "ukupno" i "prosjek" (2b)
+
+    c) Ispisati sve podatke o studentima koji su prosudili knjigu koju je taj dan
+    vratio neki drugi student (2b)
+

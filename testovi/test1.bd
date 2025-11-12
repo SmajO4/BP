@@ -29,7 +29,7 @@ Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
         INNER JOIN proizvodUTrgovini put
             ON t.sifTrgovina = put.sifTrgovina
         WHERE t.nazivTrgovina RLIKE '^[M-P]'
-          AND t.nazivTrgovina RLIKE '[^aeiouAEIOU]$'
+          AND t.nazivTrgovina RLIKE '[^aeiou]$'
           AND put.datum < DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
 
     b) Za svaku trgovinu ispisati naziv trgovine, adresu i naziv trenutno 
@@ -177,6 +177,36 @@ zavistnosti F = {E -> F, B -> DE, ADE -> C}, dokazati da vrijedi funkcijska zavi
 ABF -> CE.
 U svakom koraku dokaza navesti koji ste aksiom ili pravilo za izvodjenje funkcijskih 
 zavistnosti koristili. (2b)
+
+2 opcije:
+Da ti Mesko zagorca zivot i da ti zabrani akumulaciju
+Da ti dozvoli akumulaciju -> happy putanja
+
+R = {A, B, C, D, E, F}
+F = {E -> F, B -> DE, ADE -> C}
+ABF -> CE
+
+X = ABF 
+Y = CE
+
+1. Aksiom refleksivnosti
+X -> X
+ABF -> ABF
+
+2. Pravilo akumulacije
+Ako B -> DE
+=> ABF -> ABFDE
+
+Ako ADE -> C 
+=> ABF -> ABFDEC
+
+3. Praivlo dekompozicije
+ABF -> ABFDEC 
+=>  ABF -> CE
+
+
+
+
 
 
 

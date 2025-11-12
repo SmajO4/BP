@@ -1,0 +1,133 @@
+3 aksioma                             3 Pravila:   
+pravilo refleksivnosti                 pravilo unije:
+  X -> X                                 X -> Y  i  X -> Z 
+pravilo uvecanja                         X -> YZ
+  X -> Y  i ako je  Z podskup od R      
+  XZ -> Y                              pravilo dekompozicije
+pravilo tranzitivnosti                   X -> YZ 
+  X -> Y    Y -> Z                       X -> Y  i  X -> Z
+  X -> Z                  
+                                       pravilo o pseudotranzitivnosti
+                                         X -> Y  i  VY -> Z 
+                                         XV -> Z 
+pravila o akumulaciji: 
+X -> VZ  i  Z -> W 
+X -> VZW
+
+Uz pretpostavku da na relacijskoj shemi R = { A, B, C, D, E, F } 
+vrijedi skup funkcijskih zavisnosti F = {A → CD, AB → E, D → F }, 
+dokazati da vrijedi funkcijska zavisnost AB → EF
+
+A -> CD    A -> C   A -> D (PD)
+
+AB -> E    
+
+D -> F
+
+(PT) 
+A -> D  i  D -> F   =>   A -> F
+
+AB -> E
+
+(AU)
+A -> F
+AB -> F
+
+(PU)
+AB -> E   i  AB -> F
+AB -> EF
+
+
+5.) 12.11.2019 D
+Uz pretpostavku da na relacijskoj shemi R = {A, B, C, D, E, F}, vrijedi skup funkcijskih 
+zavistnosti F = {E -> F, B -> DE, ADE -> C}, dokazati da vrijedi funkcijska zavisnost
+ABF -> CE.
+U svakom koraku dokaza navesti koji ste aksiom ili pravilo za izvodjenje funkcijskih 
+zavistnosti koristili. (2b)
+
+(PD)
+B -> DE   =>  B -> D  i  B -> E
+
+(PPT)
+B -> DE  =>  ADE -> C 
+AB -> C 
+
+(AU)
+AB -> C  =>  ABF -> C 
+B -> E   =>  ABF -> E
+
+(PU)
+ABF -> CE
+
+5.) 13.11.2018 C
+Zadan je skup funkcijskih zavistnosti F = { ADE -> C, B -> DE, E -> F }
+Dokazite da vrijedi funkcijska zavistnost ABF -> CE. U svakom koraku dokaza 
+navedite aksiom ili pravilo koje ste koristili. (2b)
+
+
+(PD) 
+B -> DE     B -> D  i  B -> E 
+
+(PPT)
+B -> DE 
+ADE -> C  =>  BA -> C
+
+(AU)
+AB -> C 
+ABF -> C 
+
+Posto B -> E 
+(AU)
+ABF -> E
+
+(PU)
+ABF -> CE
+
+
+
+
+
+
+
+
+
+5.) 9.11.2017
+Zadan je skup funkcijskih zavisnosti F = { A -> CD, AB -> E, D -> F }.
+Dokazati da vrijedi funkcijska zavisnost AB -> EF. 
+U svakom koraku dokaza navedie aksiom ili pravilo koje ste koristili. (2b)
+
+A -> CD 
+(PD)
+A -> C  i  A -> D
+
+(AT)
+A -> D  i  D -> F   =>   A -> F
+
+(AU)
+A -> F 
+=>   AB -> F 
+
+(PU)
+AB -> F  i  AB -> E
+AB -> EF 
+
+
+
+6.) 07.12.2011.
+Zadana je relacijska shema R(A, B, C, D). Navedite primjer sadrzaja relacije r(R) na kojoj vrijedi funkcijska
+zavisnost AB -> CD, a ne vrijede funkcijske zavisnosti A -> CD i B -> CD. 
+Relacija treba sadrzavati 4 do 5 n-torki. (2b)
+
+6.) 16.11.2012. A
+Zadan je skup funkcijskih zavisnosti F = { A -> CD, AB -> E, D -> F }. 
+Dokazati da vrijedi funkcijska zavistnost AB -> EF. 
+U svakom koraku dokaza navedite aksiom ili pravilo koje ste koristili (2b)
+
+4.) 9.11.2017
+Na relaciji r (A, B, C, D, E) vrijede funkcijske zavisnosti iz 
+skupa F = { AD -> C, CD -> E }. 
+Koristenjem Armstrongovih aksioma i pravila koje iz njih proizilaze 
+(osim pravila o pseudotranzitivnosti) dokazati da na relaciji r 
+vrijedi funkcijska zavisnost AD -> E.   (3b)
+
+

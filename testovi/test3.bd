@@ -60,7 +60,6 @@ Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovi
   c) Ispisati ime i prezime vozaca, registarski broj i tip vozila za voznje koje su proslog mjeseca 
      obavljene izmedju lokacija koje se ne nalaze u istom gradu (2b)
 
-
           SELECT v.ime_vozac,
               v.prez_vozac,
               voz.regbr,
@@ -75,9 +74,12 @@ Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovi
           INNER JOIN LOKACIJA lok_do
               ON voznja.sif_lok_do = lok_do.sif_lok
           WHERE voznja.datum >= DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
-            AND voznja.datum <  DATE_FORMAT(CURDATE(), '%Y-%m-01')
-            AND lok_od.grad <> lok_do.grad;
+            AND voznja.datum <  DATE_FORMAT(CURDATE(), '%Y-%m-01'
 
+WHERE MONTH(VOZNJA.datum) = MONTH(DATE_SUB(curdate(), INTERVAL 1 MONTH))
+  AND YEAR(VOZNJA.datum) = YEAR(DATE_SUB(curdate(), INERVALE 1 MONTH))
+
+          AND lok_od.grad <> lok_do.grad;
 
 _______________________________________________________________________________________________________
 2.)

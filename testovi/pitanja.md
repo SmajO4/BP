@@ -6,7 +6,7 @@
 4.)
 
     U relacijskom modelu, sta predstavlja relcijska shema, a sta relacija?
-    Navedite osnovna svojstva relacije (2b)
+    Navedite osnovna svojstva relacije (2b):
 
     2018 C
 2.) 
@@ -14,17 +14,16 @@
     Navedite i objasnite osnovne operacije relacijske algebre. 
     Objasnite pojam unijski kompatibilnih relacija (2b)
 
+
 3.) 
 
     Koje su karakteristike lose koncipiranog modela (sheme) baze podataka. Objasnite i ilustrujte na vlastitom
     primjeru (2b)
 
-
     2017 A
 2.) 
 
     Sta je to model baze podataka? Objasniti 3 modela (nivoa opisa) baze podataka. (3b) 
-    
 
     2021 B
 2.) 

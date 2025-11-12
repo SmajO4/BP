@@ -1,0 +1,260 @@
+3.) 2019
+Relacijska shema DOPREME sastoji se od sljedecih atributa
+
+  sifAvion        - sifra aviona
+  oznTip          - oznata tipa aviona
+  nazTip          - naziv tipa aviona
+  nosivost        - nosivost aviona
+  vrijednost      - vrijednost aviona
+  datVrijednost   - zadnji datum izracunavanja 
+                    vrijednosti aviona
+  sifAerodrom     - sifra aerodroma
+  nazAerodrom     - naziv aerodroma
+  maxNosivost     - maksimalna nosivost aviona 
+                    koji moze sletjeti na aerodrom
+  datDoprema      - datum dopreme tereta na aerodrom
+  tezinaTeret     - tezina tereta koji je dopremljen 
+                    na aerodrom
+
+Pretpostavljeni kljuc relacije je sifAvion (sifra aviona).
+Avion ima sifru, tip, nosivost, vrijednost i datum kada 
+je ta vrijednsot odredjena.
+Istog dana jedan avion moze izvrsiti vise dostava na 
+razlicite aerodrome, a takodjer u istom danu na jedan 
+aerodrom dostave moze izvrsiti vise aviona.
+
+Normalizirati relaciju DOPREME na:
+
+    a) 1NF (ostvariti promjenom kljuca) (2b)
+    b) 2NF (3b)
+    c) 3NF (3b)
+
+
+
+4.) 2018
+Relacijska shema GRAND_SLAM sastoji se od sljedecih atributa:
+  
+    sifTakm       - sifra takmicara
+    imeTakm       - ime takmicara
+    prezTakm      - prezime takmicara
+    sifMec        - sifra meca
+    datumMec      - datum odigravanja meca
+    vrijemeMec    - vrijeme pocetka meca (npr. 15:00)
+    trajanjeMec   - trajanje meca u minutama
+    dobioSetova   - broj osvojenih setova jednog takmicara u mecu
+    rbrSet        - redni broj seta u mecu
+    dobioGemova   - broj dobijenih gemova jednog takmicara 
+                    u toku jednog seta
+    sifKlub       - sifra kluba za koji nastupa takmicar
+    nazKlub       - naziv kluba za koji nastupa takmicar
+
+Pretpostavljeni kljuc relacije je sifTakm (sifra takmicara). 
+Svaki takmicar nastupa samo za jedan klub, a za jedan klub 
+moze nastupati vise takmicara.
+
+Jedan mec je odredjen svojom sifrom, a evidentira se broj 
+osvojenih setova u toku meca za oba takmicara.
+Za svaki set u jednom mecu evidentira se koliko je gemova 
+u tom setu osvojio svaki od takmicara.
+
+Normalizirati relaciju GRAND_SLAM na
+  a) 1NF (ostvariti promjenom kljuca) (2b)
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+
+
+3.) 2017
+Relacijska shema PROJEKAT sastoji se od sljedecih atributa:
+
+  - sifProjekat       - sifra projekta
+  - nazivProjekat     - naziv projekta
+  - opisProjekat      - opis projekta
+  - datumPocetak      - datum pocetka projekta
+  - datumZavrsetak    - datum zavrsetka projekta
+  - sifZadatak        - sifra zadatka
+  - nazivZadatak      - naziv zadatka
+  - opisZadatak       - opis zadatka
+  - sifOsoba          - sifra osobe
+  - imeOsoba          - ime osobe
+  - prezOsoba         - prezime osobe
+  - emailOsoba        - email adersa osobe
+  - datumZadatak      - datum obavljanja zadatka
+  - brojSati          - broj sati utrosenih na rad na 
+                        zadatku u toku jednog dana
+
+Pretpostavljeni kljuc relacije je sifZadatak (sifra zadatka). 
+Svaki projekat se sastoji od vise zadataka koji se trebaju obaviti, ali jedan zadatak se obavlja na samo jednom projektu.
+
+Jedan zadatak moze obavljati vise osoba i tokom vise dana. 
+U toku jednog dana jedna osoba moze raditi na vise zadataka.
+Vodi se evidencija koliko je svaka osoba u toku jednog dana 
+utrosila sati na obavljanje odredjenog zadatka. 
+Normalizirati relaciju PROJEKTI na:
+
+  a) 1NF (2b) 
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+Rjesenje:
+
+
+3.) 2021
+
+Relacijska shema TRGOVACKI_LANAC se sastoji od sljedecih atributa:
+  - sifTrgovina       - sifra trgovine
+  - nazTrgovina       - naziv trgovine
+  - adresa            - adresa trgovine
+  - sifProizvod       - sifra proizvoda
+  - nazProizvod       - naziv proizvoda
+  - tezina            - neto iznos proizvoda
+  - sifVrProizvod     - sifra vrste proizvoda
+  - nazVrProizvod     - naziv vrste proizvoda 
+                        (mlijecna cokolada, mlijeko, ribe,...)
+  - jedMjere          - jedinica mjere vrste proizvoda 
+                        (litar, kilogram, komad,...)
+  - datum             - datum odredjivanja cijene proizvoda 
+                        u jednoj trgovini
+  - cijena            - iznos odredjene cijena proizvoda 
+                        u trogvini
+  - datPrvaNab        - datum od kada je proizvod u ponudi 
+                        u jednoj trgovini
+  - kolicina          - trenutna kolicina proizvoda u jednoj 
+                        trgovini 
+  - pbr               - postanski broj mjesta u kojem se nalazi 
+                        trgovina
+  - nazMjesto         - nazim mjesta u kojem se nalazi trgovina
+
+Pretpostavljeni kljuc relacije je sifTrgovina (sifra trgovine). 
+Cijena jednog proizvoda u jednoj trgovini s moze mijenjati vise 
+puta ali ne istog dana. 
+
+Normalizirajte relaciju TRGOVACKI_LANAC na 
+
+  a) 1NF (1NF ostvariti promjenom kljuca) (2b)
+  b) 2NF (3b)
+  c) 3NF (3b)
+
+Rjesenje:
+
+
+
+3.) 2017
+Relacijska shema SKOLA sastoji se od sljedecih atributa
+
+- sifUcenik         - sifra ucenika
+- imeUcenik         - ime ucenika
+- prezUcenik        - prezime ucenika
+- rbrRazred         - redni broj nizeg razreda osnovne 
+                      skole (1 - 4)
+- oznRazred         - oznaka razrednog odjeljenja 
+                      (npr. A,B,C...)
+- brojUcenika       - broj ucenika u razrednom odjeljenju
+- sifNastavnik      - sifra nastavnika koji je razrednik 
+                      razrednom odjeljenju
+- imeNastavnik      - ime nastavnika koji je razrednik 
+                      razrednom odijeljenju
+- prezNastavnik     - prezime nastavnika koji je razrednik 
+                      razrednom odjeljenju
+- sifPredmet        - sifra predmeta
+- nazPredmet        - naziv predmeta
+- ocjena            - ocjena ucenika iz predmeta
+
+
+Pretpostavljeni kljuc relacije je K_UCENIK = { sifUcenik }.
+Evidentiraju se ocjene ucenika iz svih predmeta u jednoj 
+skolskoj godini.
+Ucenik pohadja jedan razred i odjeljenje koje ima jednog 
+razrednika.
+Normalizirajte relaciju SKOLA na:
+
+a) 1NF (ostvariti promjenom kljuca) (2b)
+b) 2NF                              (3b)
+c) 3NF                              (3b)
+
+
+
+EEE sa samketom u 2 ujutru
+
+UCENIK (
+          sifUcenik, imeUcenik, prezUcenik,
+          rbrRazred, oznRazred, brojUcenika,
+          sifNastavnik, prezNstavnik, 
+          sifPredmet, nazPredmet, ocjena 
+       )
+pp kljuc: 
+  
+K_UCENIK = { sifUcenik }
+
+Postoje FZ:
+  sifUcenik -> imeUcenik, prezUcenik, rbrRazred, oznRazred, 
+               sifNastavnik, imeNastavnik, prezNastavnik
+
+Ne postoje FZ:
+  sifUcenik -> brojUcenika, sifPredmet, nazPredmet, ocjena
+
+Nije zadovoljena 1NF.
+
+Novi kljuc:
+K_UCENIK = { sifUcenik, sifPredmet }
+
+Zadovoljena je 1NF
+
+
+2NF
+
+K_UCENIK = { sifUcenik, sifPredmet }
+
+sifUcenik -> imeUcenik, prezUcenik, rbrRazred, oznRazred, 
+             brojUcenika, sifNastavnik, imeNastavnik, 
+             prezNastavnik
+
+sifPredmet -> nazPredmet
+
+sifUcenik, sifPredmet -> ocjena
+
+
+
+
+UCENIK (sifUcenik, imeUcenik, prezUcenik, rbrRazred,
+        oznRazred, brojUcenika, 
+        sifNastavnik, imeNastavnik, prezNastavnik)
+
+PREDMET (sifPredmet, nazPredmet)
+
+OCJENA (sifUcenik, sifPredmet, ocjena)
+
+
+3NF
+
+PREDMET i OCJENA su u 3NF
+
+sifNastavnik -> imeNastavnik, prezNastavnik
+
+
+NASTAVNIK (sifNastavnik, imeNastavnik, prezNastavnik)
+
+UCENIK (sifUcenik, imeUcenik, prezUcenik, rbrRazred,
+        oznRazred, brojUcenika, sifNastavnik)
+
+
+(rbrRazred, oznRazred) -> (sifNastavnik, brojUcenika)
+
+RAZRED (rbrRazred, oznRazred, sifNastavnik, brojUcenika)
+
+UCENIK (sifUcenik, imeUcenik, prezUcenik, rbrRazred, oznRazred)
+
+
+
+
+Konacno rjesenje:
+
+UCENIK (sifUcenik, imeUcenik, prezUcenik, rbrRazred, oznRazred)
+
+PREDMET (sifPredmet, nazPredmet)
+
+OCJENA (sifUcenik, sifPredmet, ocjena)
+
+NASTAVNIK (sifNastavnik, imeNastavnik, prezNastavnik)
+
+RAZRED (rbrRazred, oznRazred, sifNastavnik, brojUcenika)

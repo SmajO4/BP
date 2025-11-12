@@ -27,8 +27,8 @@ Ne prihvataju se rjesenja gdje se nepotrebno koriste podupiti
         FROM BROD b
         INNER JOIN PLOVIDBA p
             ON b.regBrBrod = p.regBrBrod
-        WHERE p.datPolaska >= CURDATE() - INTERVAL 10 DAY
-          AND p.datDolaska >= CURDATE() + INTERVAL 3 DAY;
+        WHERE p.datPolaska >= DATE_SUB(curdate(), INTERVAL 10 DAY)
+          AND p.datDolaska >= DATE_ADD(curdate(), INTERVAL 3 DAY)
 
   b) Ispistai registarske brojeve i imena brodova koji su iz luke Rijeka u lucu New York barem jednom
      prevozili teret ukupne ukrcane tezine vece od 200t. Svaki brod se u listi smije pojviti 

@@ -150,7 +150,8 @@ Ne postoje FZ:
 2NF
 Postoje FZ:
   sifTrgovina -> nazTrgovina, adresa, pbr, nazMjesto
-  sifProizvod -> nazProizvod, tezina, sifVrProizvod, jedMjere
+  sifProizvod -> nazProizvod, tezina, sifVrProizvod
+                 nazivVrstaProizvod, jedMjere
   sifTrgovina, sifProizvod -> datPrvaNab, kolicina
   sifTrgovina, sifProizvod, datum -> cijena
 

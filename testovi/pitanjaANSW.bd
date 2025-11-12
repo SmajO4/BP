@@ -85,7 +85,9 @@ FROM clause se moze definirati na 2 nacina:
     Označava se npr. student(STUDENT).
 
       atribut je imenovana kolona relacije
+
       domena je skup dozvoljenih vrijednosti atributa 
+
       n-torka je red relacije
 
 
@@ -160,7 +162,7 @@ FROM clause se moze definirati na 2 nacina:
                     relacije r1, i nisu elementi relacije r2
 
 
-      Dekartov proizvod (×) – kombinovanje (spajanje) svake n-torke prve iz realcije r1
+      Dekartov proizvod (×) – kombinovanje (spajanje) svake n-torke iz prve realcije r1
       sa svakom n-torkom iz druge relacije r2.
 
       Dijeljenje (/) – “za sve” nad podskupom atributa.
@@ -246,7 +248,7 @@ Anomalije unosa:
   Kada unosimo novi podatak moramo unijeti i sve ostale podatke (koji se 
   ponavljaju)
 
-Anomalije brisanja:
+Anomalije promjene:
   Ako market promijeni adersu, onda bi morali na svim mjestima gdje se 
   pojavljuje adresa za taj marker, promijeniti adresu.
 
@@ -332,14 +334,20 @@ Zamjena za lose koncipiranu relacijsku shemu:
 
 4) Uslovi za dekompoziciju bez gubitka informacija
 
-Relacija se bez gubitaka razlaze na dvije projekcije ako:
-  projekcije imaju zajednicke atribute
-  zejdnicki atributi su kljuc u barem jednoj od projekcija 
+Dekompozicija relacijske sheme obavlja se bez gubitaka informacija
+ako se nakon razlaganja početne relacije na više projekcija (podrelacija) 
+može ponovo dobiti originalna relacija.
 
+Relacija R se razlaze na R1, R2,..., Rn bez gubitaka ako vrijedi:
+r(R) = r1(R1) |><| r2(R2) |><| ... |><| rn(Rn)
 
+Dakle nema laznih ntorki i nema gubitaka informacija.
+
+✅ Uslov za dekompoziciju bez gubitaka (za dvije projekcije):
 Dekompozicija relacije R na R1 i R2 je bez gubitaka ako:
 
-   1. R1 ∩ R2 ≠ ∅ (imaju zajedničke atribute),
+   1. Projekcije imaju zadjenicke atribute
+      R1 ∩ R2 ≠ ∅ (imaju zajedničke atribute),
 
    2. Zajednički atributi su ključ barem jedne od projekcija R1 ili R2.
 
@@ -483,3 +491,16 @@ ključu
 Relacija (relacijska shema) je u 3 NF ako je u 1 NF i ako:
  niti jedan atribut iz zavisnog dijela nije tranzitivno funkcijski
 ovisan o ključu
+
+
+
+(X, Y, Z, M, N, P)
+
+X, Y, Z kljucevi
+
+M -> N
+
+R1 (X, Y, Z, M, P)
+R2 (M, N)
+
+
