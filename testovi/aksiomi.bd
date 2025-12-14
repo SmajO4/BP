@@ -64,7 +64,6 @@ Zadan je skup funkcijskih zavistnosti F = { ADE -> C, B -> DE, E -> F }
 Dokazite da vrijedi funkcijska zavistnost ABF -> CE. U svakom koraku dokaza 
 navedite aksiom ili pravilo koje ste koristili. (2b)
 
-
 (PD) 
 B -> DE     B -> D  i  B -> E 
 

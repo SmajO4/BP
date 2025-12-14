@@ -92,8 +92,7 @@ Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
             WHERE pd.nosilac = 1
               AND pd.sifNast = pr.sifNast
         );
-
-
+        
 ____________________________________________________________________________________________________________________
 2.) 
 

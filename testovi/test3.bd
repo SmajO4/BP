@@ -77,7 +77,7 @@ Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovi
             AND voznja.datum <  DATE_FORMAT(CURDATE(), '%Y-%m-01'
 
 WHERE MONTH(VOZNJA.datum) = MONTH(DATE_SUB(curdate(), INTERVAL 1 MONTH))
-  AND YEAR(VOZNJA.datum) = YEAR(DATE_SUB(curdate(), INERVALE 1 MONTH))
+AND YEAR(VOZNJA.datum) = YEAR(DATE_SUB(curdate(), INERVALE 1 MONTH))
 
           AND lok_od.grad <> lok_do.grad;
 

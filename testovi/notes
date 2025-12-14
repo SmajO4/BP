@@ -1,0 +1,42 @@
+3 aksioma
+
+Aksiom relfeksivnosti: X -> X
+
+Aksiom uvecanja 
+Ako X -> Y  ( i ako je Z podskup od R)
+XZ -> Y
+
+Aksiom tranzitivnosti
+
+X -> Y   Y -> Z   =>   X -> Z
+
+Pravilo unije
+
+X -> Y   i   X -> Z   =>  X -> YZ
+
+Pravilo dekompozicije
+
+X -> YZ   ->   X -> Y   i   X -> Z
+
+Pravilo o pseudotranzitivnosti
+
+X -> Y   i   VY -> Z
+XV -> Z
+
+Pravilo o akumulaciji
+
+X -> VZ i Z -> W
+X -> VZW
+
+
+
+
+Zadan je skup funkcijskih zavisnosti F = { A -> CD, AB -> E, D -> F }.
+Dokazati da vrijedi funkcijska zavisnost AB -> EF. 
+U svakom koraku dokaza navedie aksiom ili pravilo koje ste koristili. (2b)
+
+Oznacimo X = AB 
+         Y = EF
+
+
+

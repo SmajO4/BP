@@ -64,7 +64,7 @@
         JOIN POSUDBA p1
           ON s.JMBG = p1.JMBG
         WHERE EXISTS (
-        SELECT 1
+        SELECT *
         FROM POSUDBA p2
         WHERE p2.sifKnj = p1.sifKnj
           AND p2.datumVra = p1.datumPos

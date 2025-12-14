@@ -23,12 +23,33 @@ Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
     od M do P, a zavrsava suglasnikom i kojima su cijene postavljene prije vise 
     od pola godine. (2b)
 
+      SELECT COUNt (DISTINCT put.sifProizvod) FROM proizvodUTrgovini put 
+      INNER JOIN trgovina t 
+      ON put.sifTrgovina = t.sifTrgovina 
+      WHERE nazivTrgovina RLIKE '^[M-P]' AND nazivTrgovina RLIKE '[^aeiou]$' 
+      AND datum < DATE_SUB(curdate(), INTERVAL 6 MONTH);
+
     b) Za svaku trgovinu ispisati naziv trgovine, adresu i naziv trenutno 
     najskupljeg proizvoda u toj trgovini (pretpostaviti da postoji samo jedan
     takav proizvod) (2b)
 
+      SELECT nazivTrgovina, adresaTrgovina, nazivProizvod FROM trgovina 
+      INNER JOIN proizvodUTrgovini pot ON pot.sifTrgovina = trgovina.sifTrgovina 
+      INNER JOIN proizvod ON proizvod.sifProizvod = pot.sifProizvod 
+      WHERE cijena = (SELECT MAX(put2.cijena) FROM proizvodUTrgovini put2 
+      WHERE t.sifTrgovina = put2.sifTrgovina);
+
     c) Ispisati naziv trgovine i naziv proizvoda u toj trgovini koji niti jednom 
     nisu promijenili cijenu u nekakvoj drugoj trgovini. (2b)
+
+      SELECT nazivTrgovina, nazivProizvod FROM trgovina INNER JOIN proizvodUTrgovini 
+      ON trgovina.sifTrgovina = proizvodUTrgovini.sifTrgovina 
+      INNER JOIN proizvod ON proizvod.sifProizvod = proizvodUTrgovini.sifProizvod 
+      WHERE NOT EXISTS (
+          SELECT * 
+          FROM dnevnik d 
+          WHERE d.sifProizvod = put.sifProizvod
+          AND d.sifTrgovina <> put.sifTrgovina
 
 
 1.) 13.11.2018 
@@ -54,12 +75,32 @@ Ne prihvataju se rjesenja gdje se nepotrebno koriste podupiti
   a) Ispisati registarske brojeve i imena brodova koji su plovidbu zapoceli u toku posljednjih 10 dana 
      i u odredisnu luku nece uploviti barem jos 3 dana (2b)
 
+     SELECT b.regBrBrod, b.imeBrod FROM brod b INNER JOIN plovidba p ON b.rebBrBrod = p.regBrBrod 
+     WHERE datPolaska >= DATE_SUB(curdate(),INTERVAL 10 DAY) 
+     AND datDolaska >= date_adD(curDaTe(), INTERVAL 3 DAY);
+
   b) Ispistai registarske brojeve i imena brodova koji su iz luke Rijeka u luku New York barem jednom
      prevozili teret ukupne ukrcane tezine vece od 200t. Svaki brod se u listi smije pojviti 
      najvise jednom. (2b)
 
+     SELECT DISTINCT b.regBrBrod, b.imeBrod FROM brod b INNER JOIN plovidba p ON b.regBrBrod = p.regBrBrod 
+     INNER JOIN luka lukaOd ON lukaOd.sifLuka = p.sifLukaOd INNER JOIN luka lukaDo ON lukaDo.sifLuka = p.sifLukaDo
+     WHERE lukaOd.nazLuka = 'Rijeka' AND lukaDo.nazLuka = 'New York'
+     AND ukUkrcTezina > 200;
+
   c) Ispisati registarski broj i ime brodova u obliku "regBrBrod-imeBrod" koji prosle godine nijednom
      nisu isplovljavali iz svoje maticne luke (2b)
+
+     SELECT CONCAT(regBrBrod, '-', imeBrod) FROM brod 
+     WHERE NOT EXISTS (
+       SELECT * FROM plovidba 
+       WHERE 
+       plovidba.regBrBrod = brod.regBrBrod
+       plovidba.sifLukaOd = brod.sifMaticLuka AND 
+       YEAR(datPolaska) = YEAR(curdate()) - 1 )
+
+
+
 
 
 1.) 9.11.2017
@@ -85,13 +126,31 @@ Napisati po jednu SQL naredbu za svaki sljedeci zadatak. Upiti moraju biti neovi
      voznju u vozilima ciji tip sadrzi rijec "MERCEDES", a ne sadrzi cifru. Svaki takav vozac se u popisu
      treba naci samo jednom. (2b)
 
-  b) Ispisati broj voznji, ukupan broj predjenih kilometara i prosjecnu tezinu tereta oavljene vozilima 
+
+        SELECT DISTINCT ime_vozac, prez_vozac FROM vozac INNER JOIN voznja ON vozac.sif_vozac = voznja.sif_vozac
+        INNER JOIN vozilo on vozilo.regbr = voznja.regbr
+        WHERE MONTH(datum) IN (10,11,12) AND YEAR(datum) = YEAR(curdate()) - 1 
+        AND tip LIKE '%MERCEDES%' AND tip NOT RLIKE '[0-9]';
+
+  b) Ispisati broj voznji, ukupan broj predjenih kilometara i prosjecnu tezinu tereta obavljene vozilima 
      nosivosti izmedju 5 i 10t, a koje su krenule iz gradova ciji nazivi pocinju slovima od K do P i ne 
      zavrsavaju samoglasnikom. (2b)
+
+       SELECT COUNT(sif_voznja), SUM(broj_km), AVG(tezina) FROM VOZNJA 
+       INNER JOIN VOZILO ON VOZNJA.regbr = VOZILO.regbr INNER JOIN TERET ON VOZNJA.sif_teret = TERET.sif_teret
+       INNER JOIN LOKACIJA ON lokacija.sif_lok = voznja.sif_lok_od WHERE 
+       nosivost between 5 AND 10 AND lokacija.grad RLIKE '^[K-P]' AND grad NOT RLIKE '[aeiou]$';
 
   c) Ispisati ime i prezime vozaca, registarski broj i tip vozila za voznje koje su proslog mjeseca 
      obavljene izmedju lokacija koje se ne nalaze u istom gradu (2b)
 
+       SELECT ime_vozac, prez_vozac, vozilo.regbr, tip FROM VOZAC INNER JOIN voznja 
+       ON voznja.sif_vozac = vozac.sif_vozac INNER JOIN VOZILO on vozilo.regbr = voznja.regbr 
+       INNER JOIN lokacija lokOd ON lokOd.sif_lok = voznja.sif_lok_od
+       INNER JOIN lokacija lokDo ON lokDo.sif_lok = voznja.sif_lok_do 
+       WHERE MONTH(datum) = MONTH(DATE_SUB(curdate(), interval 1 month))
+       AND YEAR(datum) = YEAR(DATE_SUB(curdate(), Interval 1 month))
+       AND lokOd.grad <> lokDo.grad;
 
 1.) 16.11.2021
 U bazi podataka PRIJAVE nalaze se relacije (primarni kljucevi relacija su oznaceni sa *)
@@ -108,7 +167,7 @@ NASTAVNIK                                           * datProvjera    DATE  (datu
                                                       trajanje       INT   (trajanje provjere u minutama) 
 PRED                                                  sifNast        INT   (sifra nastavnika koji obavlja provjeru) 
 * sifPred   INT    (sifra predmeta)                       
-  nazPred   CHAR   (naziv predmeta)                 PROVJERA 
+  nazPred   CHAR   (naziv predmeta)                 PRIJAVA
                                                     * datProvjera    DATE  (datum odrzavanja provjere)
 PREDAJE                                             * sifPred        INT   (sifra predmeta iz kojeg se odrzava provjera)
 * sifPred   INT    (sifra predmeta)                 * mbrStud        INT   (maticni broj studenta koji obavlja prijavu)
@@ -122,13 +181,36 @@ Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
   a) Ispisati ukupan broj prijava koje su studenti obavili dva ili manje dana prije odrzavanja bilo kojeg 
      zavrsnog ispita iz predmeta ciji naziv pocinje nekim od slova izmedju O i T i u nazivu ne sadrze cifru. (2b)
 
+     STELECT count(*) FROM PRIJAVA INNER JOIN PROVJERA ON PRIJAVA.datProvjera = PROVJERA.datProvjera 
+     INNER JOIN VRSTA_PROVJ on VRSTA_PROVJ.sifProvj = PROVJERA.sifVrProvj 
+     INNER JOIN PRED ON PRED.sifPred = PROVJERA.sifPred
+     WHERE nazivVrProvj = 'Zavrsni ispit' AND nazPred RLIKE '^[OT]' AND nazPred NOT RLIKE '[0-9]'
+     AND DATEDIFF(provjera.datProvjera, prijava.datPrijava) BETWEEN 1 AND 2;
+
   b) Za svaku provjeru koja ce se odrzati u bilo koju subotu u narednih 3 mjeseca (racunajuci od dana izvodjenja
      upita) ispisati naziv predmeta, datum provjere, vrijeme pocetka provjere, ime i prezime nastavnika koji 
-     obavlja provjer u i ime i prezime nastavnika koji je nosilac na predmetu. (2b)
+     obavlja provjeru i ime i prezime nastavnika koji je nosilac na predmetu. (2b)
+
+      SELECT nazPred, datProvjera, vrijemeProvjr, nastOb.imeNast, nastOb.prezNast, nastNos.imeNast, nastNos.prezNast 
+      FROM PRED INNER JOIN PROVJERA on PRED.sifPred = Provjera.sifPred INNER JOIN nastavnik nastOb 
+      ON nastOb.sifNast = PROVJERA.sifNast INNER JOIN nastavnik nastNos ON nastNos.sifNast = Provjera.sifNast 
+      INNER JOIN PREDAJE ON PREDAJE.sifNast = nasNos.sifNast
+      INNER JOIN PRIJAVA ON Prijava.datProvjera = Provjera.datProvjera
+      WHERE PREADJE.nosilac = 1 AND WEEKDAY(datProvjera) = 5 AND datProvjere <= DATE_ADD(datPrijava, INTERVAL 3 MONTH);
 
   c) Ispisati naziv predmeta, datum odrzavanja i ime i prezime nastavnika koji obavlja provjeru za sve provjere 
      kojima je trajanje duze od prosjecnog trajanja svih provjera na predmetima kojima je taj nastavnik odgovorni
      nosilac. (2b)
+
+      SELECT nazPred, datProvjera, imeNast, prezNast FROM PRED INNER JOIN PROVJERA ON pred.sifPred = provjera.sifPred
+      INNER JOIN nstavnik ON nastavnik.sifPred = provjera.sifPred 
+      WHERE trajanje >= (
+        SELECT AVG(pr2.trajanje)
+        FROM predaje pd 
+        INNER JOIN PROVJERA pr2
+          ON pr2.sifPred = pd.sifPred
+
+      
 
 1.) 7.12.2011
 Medju ucenicima koji zavrsavaju srednju skolu i zele se upisati na fakultet provedena je anleta.
