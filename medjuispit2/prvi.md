@@ -64,7 +64,7 @@ SET put.cijena = put.cijena * 0.9;
 Drugi nacin:
 ```SQL
 UPDATE proizvodUTrgovini
-SET cijena = cijena * 0.95
+SET cijena = cijena * 0.9
 WHERE (sifTrgovina, sifProizvod) IN (
     SELECT sifTrgovina, sifProizvod
     FROM dnevnik
