@@ -247,6 +247,21 @@ HAVING SUM(k.cijena) = (
 );
 
 ```
+Drugi nacin:
+
+```SQL
+SELECT s.JMBG, s.ime, s.prezime, SUM(k.cijena) AS ukupna_vrijednost
+FROM POSUDBA p
+JOIN STUDENT s ON s.JMBG = p.JMBG
+JOIN KNJIGA k ON k.sifKnj = p.sifKnj
+GROUP BY s.JMBG, s.ime, s.prezime
+HAVING SUM(k.cijena) >= ALL (
+    SELECT SUM(k2.cijena)
+    FROM POSUDBA p2
+    JOIN KNJIGA k2 ON k2.sifKnj = p2.sifKnj
+    GROUP BY p2.JMBG
+);
+```
 
 c) Knjigama za koje nije navedena cijena, a posudjene su vise od 30 puta 
 u jednoj godini, postaviti cijenu na 50KM (2b)
@@ -367,6 +382,20 @@ JOIN (
     HAVING COUNT(*) > 100
        AND SUM(broj_km) > 10000
 ) x ON x.regbr = vozi.regbr;
+```
+Drugi nacin:
+
+```SQL
+SELECT *
+FROM VOZILO v
+WHERE v.regbr IN (
+    SELECT regbr
+    FROM VOZNJA
+    WHERE datum >= CURDATE() - INTERVAL 3 YEAR
+    GROUP BY regbr
+    HAVING COUNT(*) > 100
+       AND SUM(broj_km) > 10000
+);
 ```
 
 c) Svim vozilima koja su barem jednom prevozila teret cija tezina prelazi 10t,
