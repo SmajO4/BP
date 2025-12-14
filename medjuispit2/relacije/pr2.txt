@@ -1,0 +1,174 @@
+Ovo je samo copy-paste, nije sredjeno.
+Ima anomalija.
+
+a) πA,B(s⋈t)∩r
+
+Pretpostavka (tipično za ove zadatke): prirodni join s ⋈ t je po atributu D (zajednički naziv). U joinu učestvuju samo torke gdje je uslov D_s = D_t true (NULL ne spaja ništa).
+
+    Spoj s ⋈ t po D:
+
+s-redovi:
+
+    (b, m, NULL, NULL)
+
+    (a, n, NULL, 5)
+
+    (b, n, 4, 9)
+
+    (a, m, 6, 3)
+
+    (c, NULL, 4, 5)
+
+t-redovi:
+
+    (3, 1)
+
+    (5, NULL)
+
+    (7, 1)
+
+    (NULL, NULL)
+
+    (5, 4)
+
+Parovi sa istim ne-NULL D:
+
+    s.D = 3 → t.D = 3 postoji → join: (a, m, 6, 3, E=1)
+
+    s.D = 5 → t.D = 5 ima dva reda: (5, NULL) i (5, 4) → dva joina:
+
+        (a, n, NULL, 5, E=NULL)
+
+        (a, n, NULL, 5, E=4)
+
+        (c, NULL, 4, 5, E=NULL)
+
+        (c, NULL, 4, 5, E=4)
+
+    s.D = 9 nema par u t
+
+    s.D = NULL ne spaja ništa.
+
+Dakle, s ⋈ t (A,B,C,D,E):
+
+    (a, m, 6, 3, 1)
+
+    (a, n, NULL, 5, NULL)
+
+    (a, n, NULL, 5, 4)
+
+    (c, NULL, 4, 5, NULL)
+
+    (c, NULL, 4, 5, 4)
+
+    πA,B(s⋈t)πA,B(s⋈t):
+
+Projekcija na (A,B):
+
+    (a, m)
+
+    (a, n)
+
+    (a, n)
+
+    (c, NULL)
+
+    (c, NULL)
+
+Bez duplikata:
+
+{(a,m), (a,n), (c,NULL)}{(a,m), (a,n), (c,NULL)}.
+
+    Presjek sa r:
+
+r sadrži:
+
+    (a, m)
+
+    (NULL, m)
+
+    (b, n)
+
+    (NULL, NULL)
+
+    (c, NULL)
+
+    (b, h)
+
+Presjek πA,B(s⋈t)∩rπA,B(s⋈t)∩r:
+
+    (a, m) je i u projekciji i u r
+
+    (c, NULL) je i u projekciji i u r
+
+    (a, n) nije u r
+
+Odgovor za a) – rezultat su dvije torke:
+
+text
+A     B
+a     m
+c    null
+
+b) SELECT SUM(DISTINCT C), COUNT(D) FROM s WHERE B <> 'n'
+
+    WHERE uslov B <> 'n' (trovalentna logika – poređenje s NULL daje unknown pa se izbacuje).
+
+s:
+
+text
+ A    B     C     D
+ b    m   null  null
+ a    n   null   5
+ b    n    4     9
+ a    m    6     3
+ c   null  4     5
+
+Provjera po redovima:
+
+    (b, m, NULL, NULL): 'm' <> 'n' → true → ostaje.
+
+    (a, n, NULL, 5): 'n' <> 'n' → false → izbacuje se.
+
+    (b, n, 4, 9): 'n' <> 'n' → false → izbacuje se.
+
+    (a, m, 6, 3): 'm' <> 'n' → true → ostaje.
+
+    (c, NULL, 4, 5): B = NULL → B <> 'n' → unknown → izbacuje se.
+
+Ostaju:
+
+text
+ A    B     C     D
+ b    m   null  null
+ a    m    6     3
+
+    SUM(DISTINCT C)
+
+U filtriranim redovima C-vrijednosti:
+
+    NULL
+
+    6
+
+DISTINCT ne-NULL C: {6}
+
+SUM(DISTINCT C) = 6.
+
+    COUNT(D)
+
+COUNT(D) broji samo ne-NULL D.
+
+U filtriranim redovima D:
+
+    NULL
+
+    3
+
+Ne-NULL je samo 3 → COUNT(D) = 1.
+
+Odgovor za b) – jedna torka:
+
+text
+SUM(DISTINCT C)   COUNT(D)
+       6              1

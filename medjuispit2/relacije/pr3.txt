@@ -1,0 +1,146 @@
+a) πD(r⋈s)∩πD(t)πD(r⋈s)∩πD(t)
+
+Prirodni join r ⋈ s je po atributima A i B (zajednički atributi); NULL se ne spaja (poređenje s NULL → unknown).
+
+​
+
+    Spoj r ⋈ s (po A,B):
+
+r:
+
+    (a, m)
+
+    (NULL, m)
+
+    (b, n)
+
+    (NULL, NULL)
+
+    (c, NULL)
+
+    (b, m)
+
+s:
+
+    (b, m, NULL, NULL)
+
+    (a, n, NULL, 5)
+
+    (b, n, 4, 9)
+
+    (a, m, 6, 3)
+
+    (c, NULL, 4, 5)
+
+Parovi sa jednakim A,B i bez NULL u poređenju:
+
+    r(a,m) sa s(a,m,6,3) → (a,m,6,3)
+
+        s(a,n,…) ne odgovara jer B je n ≠ m.
+
+    r(b,n) sa s(b,n,4,9) → (b,n,4,9)
+
+    r(b,m) sa s(b,m,NULL,NULL) → (b,m,NULL,NULL)
+
+    r(c,NULL) sa s(c,NULL,4,5) → (c,NULL,4,5) – ovdje je B=NULL na obje strane; poređenje NULL = NULL je unknown, pa se u prirodnom joinu NE smatra jednakim, dakle ovaj par se ne spaja.
+
+    ​
+
+    r(NULL,…) ne spaja ništa jer A ili B sadrže NULL.
+
+Dakle, efektivno dobijamo tri torke iz spoja:
+
+text
+A   B    C     D
+a   m    6     3
+b   n    4     9
+b   m   null  null
+
+    πD(r⋈s)πD(r⋈s):
+
+D-vrijednosti iz gore:
+
+    3
+
+    9
+
+    NULL
+
+Skup: {3, 9, NULL}{3, 9, NULL}.
+
+    πD(t)πD(t):
+
+t(D,E):
+
+text
+(3, 1)
+(5, NULL)
+(7, 1)
+(NULL, NULL)
+(5, 4)
+
+Projekcija po D: 3, 5, 7, NULL → skup {3, 5, 7, NULL}{3, 5, 7, NULL}.
+
+    Presjek po D:
+
+{3,9,NULL}∩{3,5,7,NULL}={3, NULL}{3,9,NULL}∩{3,5,7,NULL}={3, NULL}.
+
+Odgovor za a)
+πD(r⋈s)∩πD(t)={3, NULL}
+πD(r⋈s)∩πD(t)={3, NULL}
+
+(ako profesor ne želi prikazivati NULL u skupu, često se eksplicitno napiše da je jedna vrijednost 3 i jedna NULL.)
+b) SELECT SUM(DISTINCT E), COUNT(D) FROM t WHERE E < 4
+
+Radimo nad t(D,E):
+
+text
+D    E
+3    1
+5   null
+7    1
+null null
+5    4
+
+    WHERE E < 4
+
+Poređenje s NULL → UNKNOWN, redovi s NULL u E ispadaju.
+
+​
+
+Red po red:
+
+    (3,1): 1 < 4 → true → ostaje.
+
+    (5,NULL): E=NULL → E<4 → unknown → izbacuje se.
+
+    (7,1): 1 < 4 → true → ostaje.
+
+    (NULL,NULL): E=NULL → izbacuje se.
+
+    (5,4): 4 < 4 → false → izbacuje se.
+
+Ostaju:
+
+text
+D    E
+3    1
+7    1
+
+    SUM(DISTINCT E)
+
+E-vrijednosti: 1, 1 → DISTINCT ne-NULL: {1}.
+SUM(DISTINCT E) = 1.
+
+    COUNT(D)
+
+COUNT(D) broji samo ne-NULL D.
+
+​
+U filtriranim redovima D su: 3 i 7 → oba ne-NULL → COUNT(D) = 2.
+
+Odgovor za b) – jedna torka:
+
+text
+SUM(DISTINCT E)   COUNT(D)
+       1               2

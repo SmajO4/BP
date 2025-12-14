@@ -1,0 +1,121 @@
+a) σA <> ’v’ OR B <> ’b’(r)
+
+Uslov selekcije: A <> 'v' OR B <> 'b'.
+Kod NULL vrijednosti poređenje daje UNKNOWN, a u WHERE/σ se uzimaju samo torke gdje je uslov true.
+
+​
+
+Posmatramo svaki red r(A,B,C):
+
+    (NULL, NULL, c)
+
+        A <> 'v' → UNKNOWN (A je NULL).
+
+        B <> 'b' → UNKNOWN (B je NULL).
+
+        UNKNOWN OR UNKNOWN = UNKNOWN → red NE ulazi.
+
+        ​
+
+    (a, NULL, c)
+
+        A='a' → 'a' <> 'v' je true.
+
+        B=NULL → B <> 'b' je UNKNOWN.
+
+        true OR unknown = true → red ULAZI.
+
+    (n, NULL, c)
+
+        'n' <> 'v' → true; B=NULL → unknown → true OR unknown = true → ULAZI.
+
+    (m, NULL, f)
+
+        'm' <> 'v' → true → ULAZI.
+
+    (k, b, f)
+
+        A='k' → 'k' <> 'v' je true; B='b' → B<>'b' je false.
+
+        true OR false = true → ULAZI.
+
+Dakle, jedini red koji NE ulazi je prvi (NULL,NULL,c). Ostali ulaze.
+
+Rezultat a):
+
+text
+A    B    C
+ a  null  c
+ n  null  c
+ m  null  f
+ k   b    f
+
+b) πA,B(r)∖πA,B(s)πA,B(r)∖πA,B(s)
+
+    πA,B(r)πA,B(r):
+
+r:
+
+text
+A    B    C
+null null  c
+ a   null  c
+ n   null  c
+ m   null  f
+ k    b    f
+
+Projekcija na (A,B), bez duplikata:
+
+    (NULL, NULL)
+
+    (a, NULL)
+
+    (n, NULL)
+
+    (m, NULL)
+
+    (k, b)
+
+Dakle: πA,B(r)={(NULL,NULL), (a,NULL), (n,NULL), (m,NULL), (k,b)}πA,B(r)={(NULL,NULL), (a,NULL), (n,NULL), (m,NULL), (k,b)}.
+
+    πA,B(s)πA,B(s):
+
+s:
+
+text
+A    B    D
+null null  d
+ k    b   null
+ k    b    d
+
+Projekcija na (A,B):
+
+    (NULL, NULL)
+
+    (k, b)
+
+    (k, b)
+
+Bez duplikata: {(NULL,NULL), (k,b)}{(NULL,NULL), (k,b)}.
+
+    Razlika skupova πA,B(r)∖πA,B(s)πA,B(r)∖πA,B(s):
+
+Iz {(NULL,NULL), (a,NULL), (n,NULL), (m,NULL), (k,b)} izbacujemo elemente koji su u {(NULL,NULL), (k,b)}.
+
+Ostaje:
+
+    (a, NULL)
+
+    (n, NULL)
+
+    (m, NULL)
+
+Rezultat b):
+
+text
+A    B
+ a  null
+ n  null
+ m  null
+
+Ako želiš, ostaje nam još teoretsko pitanje iz 22.12.2021 A (definicija integritetskih ograničenja) – to smo već praktično formulisali, a možemo ga preformulisati baš kao ispitni odgovor, ili možemo prijeći na provjeru da li ti je sve s NULL i joinovima jasno.

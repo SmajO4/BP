@@ -384,14 +384,17 @@ r(A    B    C)      s(A    B    C    D)     t(D    E)
 <!-- a) π_D (r |><| s) ∩ π_D (t) -->
 a) $a)\ \pi_D (r ⋈ s) \cap \pi_D (t)$ (1b)
 
+Odgovor:
+
 Rjesenje: {5.3}
 
 
 b) `SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'` (1b)
 
+Odgovor:
+
 Rezultat upita je jedna torka:
 ```
-text
 SUM(D)   COUNT(DISTINCT A)
  5.5              3
 ``````
@@ -412,8 +415,26 @@ r(A    B)      s(A    B    C    D)     t(D    E)
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
 a) $\pi_{A,B} (s ⋈ t) \cap r$
 
+Odgovor:
+
+Rezultat su dvije n-torke
+```
+A     B
+a     m
+c    null
+``````
 b) `SELECT SUM(DISTINCT C), COUNT(D) FROM s WHERE B <> 'n'`
 
+Odgovor:
+
+Rezultat je jedna n-torka:
+
+```
+SUM(DISTINCT C)   COUNT(D)
+       6              1
+```
+
+[Detaljni koraci: pr2](./relacije/pr2.txt)
 
 ---
 
@@ -428,9 +449,19 @@ r(A    B)      s(A    B    C    D)     t(D    E)
   b    m        
 ```
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
-a) $\pi_{D} (r ⋈ s) \cap \pi_{t}$
+a) $\pi_{D} (r ⋈ s) \cap \pi_{D}(t)$
+
+Odgovor:
+{3, NULL}
 
 b) `SELECT SUM(DISTINCT E), COUNT(D) FROM t WHERE E < 4`
+
+Odgovor:
+```
+SUM(DISTINCT E)   COUNT(D)
+       1               2
+```
+[Detaljni koraci: pr3](./relacije/pr3.txt)
 
 ---
 
@@ -446,8 +477,28 @@ r(A    B   C)      s(A    B    D)     t(D    E)
 ```
 a) $\sigma_{\text{A <> v OR B <> b}}(r)$
 
+Odgovor:
+
+```
+A    B    C
+ a  null  c
+ n  null  c
+ m  null  f
+ k   b    f
+```
+
 b) $\pi_{A,B}(r) \setminus \pi_{A,B}(s)$
 
+Odgovor:
+
+```
+A    B
+ a  null
+ n  null
+ m  null
+```
+
+[Detaljni koraci: pr4](./relacije/pr4.txt)
 
 
 
