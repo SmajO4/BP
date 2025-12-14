@@ -1,0 +1,153 @@
+r(A    B    C)      s(A    B    C    D)     t(D    E)
+--------------      -------------------     ---------
+  1    X    ab        4    Z    ac  1.2     5.3   null
+  2   null null      null  Z   null 0.5     null  4.6
+ null  X    ab        3   null  aa  null    4.6    1
+  4    Z   null       2   null  bb  0.2     5.3    4
+  4    Z    ac       null  X    ab  null
+  3    Y    aa        1    X    ab  5.3
+  2   null  bb        1    X    ac  null
+
+Pogledaj moguće parove r–s koje se mogu spojiti:
+
+    r(1, X, ab)
+
+        s(1, X, ab, 5.3) → A,B,C potpuno jednaki → spajaju se.
+
+        s(1, X, ac, NULL) → C se razlikuje (ab ≠ ac) → ne spajaju se.
+
+    r(2, NULL, NULL)
+
+        s(2, NULL, bb, 0.2): C NULL ≠ bb (poređenje s NULL → unknown, ne uzima se u joinu).
+
+    ​
+
+    drugi s-redovi se ne poklapaju po A,B,C.
+
+r(NULL, X, ab)
+
+    s(NULL, X, ab, NULL): A je NULL u oba reda → uslov (A=A) daje unknown, join ih NE spaja.
+
+        ​
+
+    r(4, Z, NULL)
+
+        s(4, Z, ac, 1.2): C je NULL vs ac → nema spajanja.
+
+    r(4, Z, ac)
+
+        s(4, Z, ac, 1.2): A,B,C se poklapaju → spajaju se.
+
+    r(3, Y, aa)
+
+        nijedan red u s nema istovremeno A=3,B=Y,C=aa → nema spajanja.
+
+    r(2, NULL, bb)
+
+        s(2, NULL, bb, 0.2): A,B,C se poklapaju → spajaju se.
+
+Dakle, r⋈sr⋈s ima tri torke po D:
+
+    iz (1,X,ab) ⋈ (1,X,ab,5.3) → D = 5.3
+
+    iz (4,Z,ac) ⋈ (4,Z,ac,1.2) → D = 1.2
+
+    iz (2,NULL,bb) ⋈ (2,NULL,bb,0.2) → D = 0.2
+
+πD(r⋈s)={5.3, 1.2, 0.2}πD(r⋈s)={5.3, 1.2, 0.2}.
+
+    πD(t)πD(t): t(D,E)
+
+text
+t:
+(5.3, null)
+(null, 4.6)
+(4.6, 1)
+(5.3, 4)
+
+Projekcija po D:
+
+    5.3
+
+    NULL
+
+    4.6
+
+    5.3
+
+Skup bez duplikata: {5.3, 4.6, NULL}{5.3, 4.6, NULL}.
+
+    Presjek skupova po D:
+
+{5.3,1.2,0.2}∩{5.3,4.6,NULL}={5.3}{5.3,1.2,0.2}∩{5.3,4.6,NULL}={5.3}.
+
+Odgovor za a)
+πD(r ⋈ s) ∩ πD(t)={5.3}
+
+
+b) SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'
+
+Radimo redom:
+
+    WHERE uslov: C <> 'ac'
+
+    Poređenje s NULL daje UNKNOWN, pa se takve torke isključuju.
+
+S- tabela:
+
+text
+ A     B     C     D
+ 4     Z     ac   1.2
+null   Z   null   0.5
+ 3   null   aa   null
+ 2   null   bb   0.2
+null   X    ab   null
+ 1    X    ab   5.3
+ 1    X    ac   null
+
+Test C <> 'ac':
+
+    (4,Z,ac,1.2): C = 'ac' → uslov je false → izbacuje se.
+
+    (NULL,Z,NULL,0.5): C = NULL → C <> 'ac' → UNKNOWN → izbacuje se.
+
+    (3,NULL,aa,NULL): 'aa' <> 'ac' → true → ostaje.
+
+    (2,NULL,bb,0.2): 'bb' <> 'ac' → true → ostaje.
+
+    (NULL,X,ab,NULL): 'ab' <> 'ac' → true → ostaje.
+
+    (1,X,ab,5.3): 'ab' <> 'ac' → true → ostaje.
+
+    (1,X,ac,NULL): C='ac' → false → izbacuje se.
+
+Ostaju redovi:
+
+text
+ A     B     C     D
+ 3   null   aa   null
+ 2   null   bb   0.2
+null   X    ab   null
+ 1    X    ab   5.3
+
+    SUM(D): suma D, ignoriše NULL vrijednosti.
+
+
+
+Odabrane vrijednosti D: NULL, 0.2, NULL, 5.3 → uzimaju se samo 0.2 i 5.3:
+
+SUM(D) = 0.2 + 5.3 = 5.5
+
+    COUNT(DISTINCT A): broji različite, ne-NULL vrijednosti A.
+
+    ​
+
+Vrijednosti A u filtriranim redovima: 3, 2, NULL, 1 → različite ne-NULL su {1,2,3} → COUNT(DISTINCT A) = 3.
+
+Odgovor za b)
+Rezultat upita je jedna torka:
+
+text
+SUM(D)   COUNT(DISTINCT A)
+ 5.5              3
+

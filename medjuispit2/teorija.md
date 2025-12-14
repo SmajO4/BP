@@ -189,7 +189,8 @@ Ilustrovati na vlastitom primjeru. (3b)***
 
 > 14.12.2017 B
 
-- ***Navedite pravila za rukovanje NULL vrijednostima u osnovnim logickim
+> [!NOTE]
+>***Navedite pravila za rukovanje NULL vrijednostima u osnovnim logickim
 operacijama, relacijskim i aritmetickim izrazima? (3b)***
 
 - ***Aritmetički izrazi***
@@ -243,7 +244,6 @@ operacijama, relacijskim i aritmetickim izrazima? (3b)***
 WHERE uslov selektirа samo n-torke gdje je izraz true; n-torke za koje je izraz 
 false ili unknown se odbacuju.
 
-
 > [!NOTE] 
 > ***Navedite moguce strategije odrzavanja referensijskog integriteta pri 
 brisanju n-torke. Koje od navedenih strategija se ne smiju koristiti ukoliko
@@ -282,9 +282,9 @@ koristiti, jer ključna polja primarnog ključa u pozivajućoj relaciji ne smiju
 
 > 12.12.2014 A
 
-- ***Koja su to korisnicka pravila integriteta i na koji nacin se definisu 
+> [!NOTE]
+> ***Koja su to korisnicka pravila integriteta i na koji nacin se definisu 
 u SQLU-u? Navedite vlasitit primjer. (3b)***
-
 
 - ***Korisnička pravila integriteta i definisanje u SQL-u***
 
@@ -363,8 +363,12 @@ definicije u bazi podataka. (3b)***
 
 
 
+# Zadaci sa relacijama i ispisom
+
 > [!NOTE]
 > ***Zadane su relacije:***
+> ***Napisite rezultate obavljanja sljedecih operacija 
+> (SQL upite nije potrebno pisati):***
 
 ```text
 r(A    B    C)      s(A    B    C    D)     t(D    E)
@@ -377,17 +381,23 @@ r(A    B    C)      s(A    B    C    D)     t(D    E)
   3    Y    aa        1    X    ab  5.3
   2   null  bb        1    X    ac  null
 ```
-
-***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
-
 <!-- a) π_D (r |><| s) ∩ π_D (t) -->
 a) $a)\ \pi_D (r ⋈ s) \cap \pi_D (t)$ (1b)
 
+Rjesenje: {5.3}
+
+
 b) `SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'` (1b)
 
+Rezultat upita je jedna torka:
+```
+text
+SUM(D)   COUNT(DISTINCT A)
+ 5.5              3
+``````
+[Detaljni koraci: pr1](./relacije/pr1.txt)
 
-> [!NOTE]
-> ***Zadane su relacije:***
+---
 
 ```text
 r(A    B)      s(A    B    C    D)     t(D    E)
@@ -399,16 +409,13 @@ r(A    B)      s(A    B    C    D)     t(D    E)
   c   null       c   null  4    5        5    4
   b    h        
 ```
-***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
-
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
 a) $\pi_{A,B} (s ⋈ t) \cap r$
 
 b) `SELECT SUM(DISTINCT C), COUNT(D) FROM s WHERE B <> 'n'`
 
 
-> [!NOTE]
-> - ***Zadane su relacije:***
+---
 
 ```text
 r(A    B)      s(A    B    C    D)     t(D    E)
@@ -420,16 +427,12 @@ r(A    B)      s(A    B    C    D)     t(D    E)
   c   null       c   null  4    5        5    4
   b    m        
 ```
-***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
-
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
 a) $\pi_{D} (r ⋈ s) \cap \pi_{t}$
 
 b) `SELECT SUM(DISTINCT E), COUNT(D) FROM t WHERE E < 4`
 
-
-> [!NOTE]
-> ***Zadane su relacije:***
+---
 
 ```text
 r(A    B   C)      s(A    B    D)     t(D    E)
@@ -441,8 +444,6 @@ r(A    B   C)      s(A    B    D)     t(D    E)
   k    b   f
 
 ```
-***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
-
 a) $\sigma_{\text{A <> v OR B <> b}}(r)$
 
 b) $\pi_{A,B}(r) \setminus \pi_{A,B}(s)$
