@@ -24,6 +24,9 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 # INTEGRITET
 
 
+> [!QUESTION]
+> Postavlja se pitanje?
+
 
 # PITANJA SA ROKOVA
 
@@ -31,6 +34,13 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 
 - ***Koje su strategije odrzavanja referencijskog integriteta za kriticne 
 operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto?*** (3b)
+
+Kritične operacije su: **brisanje** i **ažuriranje** n-torke u roditeljskoj 
+(pozivanoj) relaciji čiji se primarni ključ referencira kao strani ključ u 
+drugim relacijama.
+
+
+
 
 - ***Zadane su relacije:***
 
@@ -152,7 +162,15 @@ a) $\sigma_{\text{A <> v OR B <> b}}(r)$
 
 b) $\pi_{A,B}(r) \setminus \pi_{A,B}(s)$
 
+---
 
+>?
+>22.12.2021 A
+
+- ***Objasnite sta su integritetska ogranicenja i sta omogucavaju njihove 
+definicije u bazi podataka. (3b)***
+
+- ***Zadane su relacije r, s i t:***
 
 
 

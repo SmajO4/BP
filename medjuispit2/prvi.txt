@@ -168,8 +168,43 @@ u toj trgovini (2b)
 
 
 ------------------------------------------------------------------------
-18.12.2018 C
+? 22.12.2021 A ?
 
+U bazi podataka PRIJAVE zadane su relacije:
+
+
+STUD:             PROVJERA:
+*mbrstud          *datProvjera    - datum odrzavanja provjere
+ imeStud          *sifPred        - sifra predmeta iz kojeg se odrzava provjera
+ prezStud          sifVrProvj     - sifra vrste provjere koja se odrzava
+                   vrijemeProvj   - vrijeme pocetka provjere
+NASTAVNIK:         trajanje       - trajanje provjere u minutama
+*sifNast           sifNast        - sifra nastavnika koji obavlja provjeru
+ imeNast
+ prezNast         VRSTA PROVJ
+                  *sifraVrProvj   - sifra vrste provjere
+                   nazVrProvj     - naziv vrste provjere (zavrsni ispit, medjuispit..)
+
+PRED:             PRIJAVA:        
+*sifPred          *datProvjera    - datum odrzavanja provjere 
+nazPred           *sifPred         - sifra predmeta iz kojeg se odrzava provjera
+                  *mbrStud        - maticni broj studenta koji obavlja prijavu
+PREDAJE:           datPrijava     - datum kada je obavljena prijava
+*sifPred           vrijemePrijava - vrijeme kada je obavljena prijava
+*sifNast
+ nosilac BOOL   - da li je nosilac predmeta
+
+a) Ispisati rang listu predmeta prema broju obavljenih prijava na bilo koju
+vrstu provjere u toku tekuce godine. Ispisivati naziv predmeta i broj 
+obavljenih prijava, a blize vrhu liste treba da se pojave predmeti koji su 
+imali vise prijava. Predmete sa istim brojem prijava poredati po nazivu.
+(2b)
+
+b) Svim provjerama koje ne odrzavaju nosioci na predmetu produziti trajanje 
+za 20% (2b)
+
+c) Obrisati sve podatke o provjerama na koje je prijavljeno manje od 5 
+studenata (2b)
 
 ------------------------------------------------------------------------
 
@@ -274,3 +309,4 @@ e) Svim mehanicarima koji su obavili vise od 500 poslova na bilo kojem
 automobilu postaviti sifru vrste posla za koji je specijaliziran na sifru 
 vrste posla koju je taj mehanicar posljednju obavio (prepotsavlja se da je taj
 dan obavljao samo tu vrstu posla) (3b)
+
