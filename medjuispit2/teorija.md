@@ -29,8 +29,8 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 > 18.12.2018 C
 
 > [!NOTE] PITANJE:
-Koje su strategije odrzavanja referencijskog integriteta za kriticne 
-operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)
+> Koje su strategije odrzavanja referencijskog integriteta za kriticne 
+> operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)
 
 Kritične operacije su: 
 
