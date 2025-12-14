@@ -24,20 +24,28 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 # INTEGRITET
 
 
-> [!QUESTION]
-> Postavlja se pitanje?
-
-
 # PITANJA SA ROKOVA
 
 > 18.12.2018 C
 
-- ***Koje su strategije odrzavanja referencijskog integriteta za kriticne 
-operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto?*** (3b)
+> [!NOTE] PITANJE:
+Koje su strategije odrzavanja referencijskog integriteta za kriticne 
+operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)
 
-Kritične operacije su: **brisanje** i **ažuriranje** n-torke u roditeljskoj 
-(pozivanoj) relaciji čiji se primarni ključ referencira kao strani ključ u 
-drugim relacijama.
+Kritične operacije su: 
+
+- **brisanje** i
+- **ažuriranje** 
+
+n-torke u roditeljskoj (pozivanoj) relaciji čiji se primarni ključ referencira 
+kao strani ključ u drugim relacijama.
+
+Glavne strategije su:
+
+***Zabrana operacije (NO ACTION / RESTRICT)***
+
+- 
+
 
 
 
