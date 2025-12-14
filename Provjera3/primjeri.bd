@@ -1,0 +1,245 @@
+1. Kreiraj index tako da nastavnik moze odrzati ispit
+iz nekog predmeta samo jednom u toku dana
+
+  CREATE UNIQUE INDEX ispit_unique ON ispit(sifNastavnik, sifPred, datIspit)
+
+
+2. Promijeni u tabeli da su studenti koji su stanovali u 
+Dubrovniku da su se preselili u Zagreb, postanski brojevi nisu poznati
+
+  UPDATE stud
+  SET pbrStan = (SELECT pbr FROM mjesto WHERE nazMjesto = 'Zagreb')
+  WHERE pbrStan = (SELECT pbr FROM mjesto WHERE nazMjesto = 'Dubrovnik')
+
+3. Svi predmeti cija se orgjed zove AR, su premjesteni na RI
+Izvrsi izmjenu u predmetima ali sifra orgjed nije direktno poznata
+
+  UPDATE pred
+  SET sifORgjed = (SELECT sigOrgjed FROM orgjed 
+    WHERE nazOrgjed = 'RI')
+  WHERE sifOrgjed = (SELECT sifOrgjed FROM orgjed 
+    WHERE nazOrgjed = 'AR')
+
+4. Ispisi sifre predmeta koji imaju prosjek pozitivnih ocjena veci od 3
+
+  SELECT sifPred FROM ispit GROUP BY sifPred 
+  HAVING AVG(ocjena) > 3
+
+__________________________________________________________________________
+
+1. Ispisati postojanje f-je zavisnosti prezNastavnik, koef -> sifOrgjed 
+u relaciji nastavnik
+
+  SELECT prezNastavnik, koef FROM nastavnik
+  GROUP BY 1, 2 HAVING COUNT (DISTINCT sifOrgjed) > 1;
+
+
+2. Upotrebom SELECT naredbe kreirati i napuniti privremenu relaciju orgjedTMP 
+sa svim atributima relacije orgjed te atributima UpStud i PrUpStud koji 
+predstavljaju ukupan i prosjecan broj upisanih studenata na svim predmetima 
+sa te organizacione jedinice.
+
+  CREATE TEMPORARY TABLE orgjedTMP AS
+  SELECT orgjed.*, COUNT(*) UpStud, PrUpStud FROM orgjed INNER JOIN 
+
+  nije zavrseno ovo.
+
+__________________________________________________________________________
+
+1. Postaviti index na 3 atributa iz neke relacije npr pred
+
+  CREATE INDEX pred_index ON pred(sifOrgjed, nazPred, brojSatiTjedno)
+
+2. Napisati TEMPORARY TABLE ispit1 koji je isti kao ispit
+izbrisi sve ispite iz ispit1 prije 2000 godine
+
+
+3. Ispisi za svaku dvoranu oznaku, kapacitet, broj razlicitih predmeta
+i poredati po broju predmeta opadajuce koji imaju isto predmeta poredati
+po oznaci dvorane uzlazno.
+
+
+4. Ispisati mbrStud, prezime, broj ocjena nepolozenih ispita
+ispisi studente koji su pali na vise od 9 predmeta
+
+__________________________________________________________________________
+
+1. ispisati matricni broj, ime i prezime studenta gdje maticni broj 
+nije upisan
+
+2. ispisati nazive predmeta i nazive orgjed.
+pise da postoji mogucnost da nisu ispisani svi podaci za orgjed 
+uglv moraju biti ispisani nazivi predmeta bez obrzina na to jel 
+imaju podaci za orgjed
+
+__________________________________________________________________________
+
+1. da se izbrisu studenti rodjeni prije 1985
+
+2. da su svi sa orgjed 'neke' premjesteni u drugu orgjed
+
+3. prvi mi je bio da se privremena tabela napuni sa sif pred,
+naz pred, broj polozenih ispita i prosjecna ocjena
+
+4. da se ispise prezime, ime nastavnika i prosjecan ocjena svih polozenih
+ispita, al da je vece od 3.5
+
+__________________________________________________________________________
+
+Ova dva su za narednu provjeru...
+Zao mi obrisat:
+
+1. ispisi mbr, ime, prezime stud gdje mbr nije upisan
+
+  SELECT mbrStud, imeStud, prezStud FROM stud
+  WHERE mbrStud is NULL;
+
+2. Ispisati nazPred, nazOrgjed ali postoji mogucnost da nisu ispisani svi 
+podaci za orgjed, svi moraci moraju biti upisani bezobzira
+
+  SELECT nazPred, nazOrgjed FROM pred
+  LEFT OUTER JOIN orgjed ON pred.sifOrgjed = orgjed.sifOrgjed;
+
+__________________________________________________________________________
+
+Ovo je uradjeno:
+
+1. 
+  
+  SELECT kratPred, nazPred, AVG(ocjena)
+  FROM pred INNER JOIN ispit ON pred.sifPred = ispit.sifPred
+  WHERE ocjena > 1
+  GROUP BY ispit.sifPred, 1, 2;
+
+2. 
+
+  SELECT mjesto.sifZupanija, COUNT(*) 
+  FROM ispit INNER JOIN nastavnik ON ispit.sifNastavnik = nastavnik.sifNastavnik
+  INNER JOIN mjesto ON nastavnik.pbrStan = mjesto.pbr WHERE ocjena = 1
+  GROUP BY 1;
+
+3. 
+
+  SELECT imeNastavnik, COUNT(*) 
+  FROM nastavnik INNER JOIN ispit on ispit.sifNastavnik = nastavnik.sifNastavnik
+  WHERE ocjena > 1
+  GROUP BY imeNastavnik, ispit.sifNastavnik;
+
+4. 
+
+  SELECT B.sifOrgjed, B.nazOrgjed, COUNT(*)
+  FROM orjged 
+  ???
+
+__________________________________________________________________________
+
+SLIKAN ROK:
+
+1. Kreirati indeks ispit1 nad relacijom ispit koji ce obezbijediti da jedan 
+   nastavnik (sifNastavnik) ne moze drzati ispite iz vise predmeta (sifPred)
+   u istom danu (datIspit).
+
+  CREATE UNIQUE INDEX ispit1 ON ispit(sifNastavnik, datIspit)
+
+2. Postojecu relaciju pred1 (sifPred, kratPred, nazPred) popunite podacima o 
+   predmetima iz relacije pred koja pripada organizaciskoj jedinice 
+   'Zavod za primjenjeno racunarstvo'
+
+  INSERT INTO pred1(sifPred, kratPred, nazPred)
+  SELECT sifPred, kratPred, nazPred FROM pred
+  WHERE sifOrgjed = (SELECT sifOrgjed FROM orgjed 
+  WHERE nazOrgjed = 'Zavod za primjenjeno racunarstvo');
+
+3. Sve podatke iz tabele stud prekopirajte u privremenu tabelu stud1.
+   Iz tabele stud1 izbrisite sve podatke o studentima rodjenim nakon 1985.
+
+  CREATE TEMPORARY TABLE stud1 AS
+  SELECT * FROM stud 
+
+  DELETE FROM stud1 WHERE YEAR(DatRodStud) > 1985
+
+4. Svi predmeti sa organizacione jedinice 'Zavod za primjenjeno racunarstvo' 
+   su premjesteni na organizacionu jedinicu 'Zavod za automatiku i robotiku'
+   Unesite ovu informaciju u relaciju pred (Konkretne sifre navedenih 
+   organizacionih jedinica nisu nam poznate)
+
+  UPDATE pred
+  SET sifOrgjed = (SELECT sifORgjed FORM orgjed
+  WHERE nazOrgjed = 'Zavod za automatiku i racunarstvo')
+  WHERE siforgjed = (SELECT sifOrgjed FROM orgjed 
+  WHERE nazOrgjed = 'Zavod za primjenjeno racunarstvo')
+
+__________________________________________________________________________
+
+1. u fazonu da kreiras indeks tako da nastavnik moze odrzati ispit iz 
+   nekog predmeta samo jednom u toku dana
+
+   CREATE UNIQUE INDEX ispitUnigue ON ispit (sifNastavnik, sifPred, datIspit);
+   SELECT * FROM ispit;
+
+2. da promijenis u tabeli da svi sutendi koji su zivili u Dubrovniku 
+   da su se preselili u Zagreb, ali ne znas postanske brojeve.
+
+   UPDATE stud
+   SET pbrRod = (SELECT pbr FROM mjesto WHERE nazMjesto = 'Zagreb')
+   WHERE pbrRod = (SELECT prb FROM mjesto WHERE nazMjesto = 'Durobrnik');
+
+3. bila 2 gdje koristis GROUP BY, HAVING
+
+4. nije bio TEMPORARY table
+
+   Ispisi sifre predmeta koji imaju prosjek poz ocjena vecih od 3
+
+   SELECT sifPred FROM ispit
+   GROUP BY sifPred
+   HAVING AVG(ocjena) > 3
+__________________________________________________________________________
+
+SLIKAN ROK
+
+1. Kreirajte indeks pred1 nad relacijom pred koji ce obezbijediti da u jednoj
+organizacijskoj jedinici (sifOrgjed) ne moze postojati vise predmeta sa istim 
+nazivom (nazPred) i kraticom predmeta (kratPred)
+
+  CREATE UNIQUE INDEX pred1 ON pred(sifOrgjed, nazPred, kratPred);
+
+2. Postojecu relaciju stud1(mbrStud, prezStud, imeStud) napuniti podacima o
+studentima rodjenim u mjestu 'Karlovac'
+
+  INSERT INTO stud1(mbrStud, prezStud, imeStud)
+  SELECT mbrStud, prezStud, imeStud, FROM stud
+  WHERE pbrRod = (SELECT pbr FROM mjesto WHERE nazMjesto = 'Karlovac');
+
+3. Sve potadke iz tabele pred prekopirati u privremenu tabelu pred1.
+Iz tabele pred1 izbrisati sve podatke o predmetima ciji nazi pocinje 
+samoglasnikom (AEIOU)
+
+  CREATE TEMPORARY TABLE pred1 AS SELECT * FROM pred 
+  DELETE FROM pred1 WHERE nazPred RLIKE '^[AEIOU]';
+
+
+4. Svi nastavnici koji su bili zaposleni na organizacijskoj jedinici 
+'Fakultet elektrotehnike' premjesteni su na organizacijsku jedinicu 
+'Fakultet elektrotehnike i racunarstva'. Unesite ovu informaciju u
+relaciju nastavnik. (Konkretne sifre navedenih organizacijskih jedinica
+nisu poznate)
+
+  UPDATE nastavnik
+  SET siforgjed = (SELECT sifORgjed FROM orgjed
+    WHERE nazOrgjed = 'Fakultet elektrotehnike i racunarstva')
+  WHERE siforgjed = (SELECT sifOrgjed FROM orgjed
+    WHERE nazOrgjed = 'Fakultet elektrotehnike');
+
+__________________________________________________________________________
+
+1. Ispisi ime, prez nastavnika i prosjecna ocjena svih polozenih ispita, 
+prosjek veci od 3.5
+
+2. Svi predmeti sa orgjed 'Zavod...' su premjesteni na orgjed 'Zavod za AR'
+Unesite ovu info u relaciju pred
+
+  UPDATE pred
+  SET siforgjed = (SELECT sifORgjed FROM orgjed 
+    WHERE nazOrgjed = 'Zavod za AR')
+  WHERE sifOrgjed = ( SELECT sifORgjed FROM orgjed
+    WHERE nazOrgjed = 'Zavod...');

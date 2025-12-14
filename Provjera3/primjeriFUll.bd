@@ -1,0 +1,315 @@
+1️⃣ Kreiraj indeks tako da nastavnik može održati ispit iz nekog 
+predmeta samo jednom u toku dana.
+
+  CREATE UNIQUE INDEX ispit_unique
+  ON ispit (sifNastavnik, sifPred, datIspit);
+
+
+2️⃣ Studenti koji su stanovali u Dubrovniku preselili su se u Zagreb.
+Poštanske brojeve ne znaš napamet, ali ih dobijaš iz tabele mjesto.
+
+  UPDATE stud
+  SET pbrStan = (
+      SELECT pbr FROM mjesto WHERE nazMjesto = 'Zagreb'
+  )
+  WHERE pbrStan = (
+      SELECT pbr FROM mjesto WHERE nazMjesto = 'Dubrovnik'
+  );
+
+
+3️⃣ Svi predmeti čija se organizaciona jedinica zove 'AR' 
+premješteni su u organizacionu jedinicu 'RI'.
+
+Šifre organizacionih jedinica nisu poznate direktno.
+
+  UPDATE pred
+  SET sifOrgjed = (
+      SELECT sifOrgjed FROM orgjed
+      WHERE nazOrgjed = 'RI'
+  )
+  WHERE sifOrgjed = (
+      SELECT sifOrgjed FROM orgjed
+      WHERE nazOrgjed = 'AR'
+  );
+
+
+4️⃣ Ispiši šifre predmeta koji imaju prosjek pozitivnih ocjena 
+veći od 3.
+
+  SELECT sifPred
+  FROM ispit
+  WHERE ocjena > 1
+  GROUP BY sifPred
+  HAVING AVG(ocjena) > 3;
+
+
+1️⃣ Provjeriti postojanje funkcijske zavisnosti
+prezNastavnik, koef → sifOrgjed u relaciji nastavnik.
+
+  SELECT prezNastavnik, koef
+  FROM nastavnik
+  GROUP BY prezNastavnik, koef
+  HAVING COUNT(DISTINCT sifOrgjed) > 1;
+
+
+2️⃣ Kreirati privremenu relaciju orgjedTMP
+
+koja ima sve atribute kao orgjed + atribute:
+
+UpStud = ukupan broj upisanih studenata (suma upisanoStud) 
+na svim predmetima te org. jedinice
+
+PrUpStud = prosječan broj upisanih studenata na predmetima 
+te org. jedinice.
+
+  CREATE TEMPORARY TABLE orgjedTMP AS
+  SELECT o.sifOrgjed,
+         o.nazOrgjed,
+         o.sifNadorgjed,
+         SUM(p.upisanoStud) AS UpStud,
+         AVG(p.upisanoStud) AS PrUpStud
+  FROM orgjed o
+  JOIN pred p ON p.sifOrgjed = o.sifOrgjed
+  GROUP BY o.sifOrgjed, o.nazOrgjed, o.sifNadorgjed;
+
+
+1️⃣ Postaviti indeks na 3 atributa u relaciji pred 
+(npr. sifOrgjed, nazPred, brojSatiTjedno).
+
+  CREATE INDEX pred_index
+  ON pred (sifOrgjed, nazPred, brojSatiTjedno);
+
+
+2️⃣ Napraviti TEMPORARY TABLE ispit1 istu kao ispit, 
+i obrisati sve ispite prije 2000. godine.
+
+  CREATE TEMPORARY TABLE ispit1 AS
+  SELECT * FROM ispit;
+
+  DELETE FROM ispit1
+  WHERE datIspit < '2000-01-01';
+
+
+3️⃣ Za svaku dvoranu ispisati: oznaku, kapacitet, 
+broj različitih predmeta
+
+koji se u njoj održavaju. Sortirati po broju predmeta 
+opadajuće, a za iste brojeve po oznaci dvorane uzlazno.
+
+  SELECT d.oznDvorana,
+         d.kapacitet,
+         COUNT(DISTINCT r.sifPred) AS brPredmeta
+  FROM dvorana d
+  LEFT JOIN rezervacija r ON r.oznDvorana = d.oznDvorana
+  GROUP BY d.oznDvorana, d.kapacitet
+  ORDER BY brPredmeta DESC, d.oznDvorana ASC;
+
+
+4️⃣ Ispisati mbrStud, prezime i broj nepoloženih ispita (ocjena = 1).
+Ispisati samo studente koji su pali na više od 9 ispita.
+
+  SELECT s.mbrStud,
+         s.prezStud,
+         COUNT(*) AS brojNepolozenih
+  FROM stud s
+  JOIN ispit i ON i.mbrStud = s.mbrStud
+  WHERE i.ocjena = 1
+  GROUP BY s.mbrStud, s.prezStud
+  HAVING COUNT(*) > 9;
+
+
+🔹 BLOK 5 (kraće formulisan)
+1️⃣ Izbrisati studente rođene prije 1985.
+
+  DELETE FROM stud
+  WHERE datRodStud < '1985-01-01';
+
+
+2️⃣ Svi iz jedne org. jedinice premješteni u drugu 
+(generalni oblik).
+Npr. sa 'Stara orgjed' na 'Nova orgjed':
+
+  UPDATE nastavnik
+  SET sifOrgjed = (
+      SELECT sifOrgjed FROM orgjed
+      WHERE nazOrgjed = 'Nova orgjed'
+  )
+  WHERE sifOrgjed = (
+      SELECT sifOrgjed FROM orgjed
+      WHERE nazOrgjed = 'Stara orgjed'
+  );
+
+
+3️⃣ Napuniti privremenu tabelu sa: sifPred, nazPred, 
+broj položenih ispita, prosječnom ocjenom.
+
+  CREATE TEMPORARY TABLE predStat AS
+  SELECT p.sifPred,
+         p.nazPred,
+         COUNT(*) AS brPolozenih,
+         AVG(i.ocjena) AS prosjek
+  FROM pred p
+  JOIN ispit i ON i.sifPred = p.sifPred
+  WHERE i.ocjena > 1
+  GROUP BY p.sifPred, p.nazPred;
+
+
+
+4️⃣ Ispisati prezime, ime nastavnika i prosječnu ocjenu 
+svih položenih ispita
+koje je on ocijenio, ali samo ako je prosjek > 3.5.
+
+  SELECT n.prezNastavnik,
+         n.imeNastavnik,
+         AVG(i.ocjena) AS prosjek
+  FROM nastavnik n
+  JOIN ispit i ON i.sifNastavnik = n.sifNastavnik
+  WHERE i.ocjena > 1
+  GROUP BY n.sifNastavnik, n.prezNastavnik, n.imeNastavnik
+  HAVING AVG(i.ocjena) > 3.5;
+
+
+
+
+🔹Za svaki B (nadorgjed) ispisati šifru, naziv i broj 
+podređenih orgj. jedinica.
+
+  SELECT B.sifOrgjed,
+         B.nazOrgjed,
+         COUNT(*) AS brojPodredjenih
+  FROM orgjed
+  JOIN orgjed B ON orgjed.sifNadorgjed = B.sifOrgjed
+  GROUP BY B.sifOrgjed, B.nazOrgjed;
+
+
+
+1️⃣ Indeks ispit1 da jedan nastavnik ne može držati 
+ispite iz više predmeta u istom danu.
+
+  CREATE UNIQUE INDEX ispit1
+  ON ispit (sifNastavnik, datIspit);
+
+
+2️⃣ Relaciju pred1(sifPred, kratPred, nazPred) napuniti 
+predmetima iz pred koji pripadaju org. jedinici 
+'Zavod za primijenjeno računarstvo'.
+
+  INSERT INTO pred1 (sifPred, kratPred, nazPred)
+  SELECT p.sifPred, p.kratPred, p.nazPred
+  FROM pred p
+  WHERE p.sifOrgjed = (
+      SELECT o.sifOrgjed
+      FROM orgjed o
+      WHERE o.nazOrgjed = 'Zavod za primijenjeno racunarstvo'
+  );
+
+
+3️⃣ Sve podatke iz stud prekopirati u privremenu tabelu stud1.
+Iz stud1 obrisati sve studente rođene nakon 1985.
+
+  CREATE TEMPORARY TABLE stud1 AS
+  SELECT * FROM stud;
+
+  DELETE FROM stud1
+  WHERE YEAR(datRodStud) > 1985;
+
+
+4️⃣ Svi predmeti sa orgjed 'Zavod za primijenjeno računartvo'
+premješteni su na orgjed 'Zavod za automatiku i robotiku'.
+Unijeti to u pred.
+
+  UPDATE pred
+  SET sifOrgjed = (
+      SELECT sifOrgjed
+      FROM orgjed
+      WHERE nazOrgjed = 'Zavod za automatiku i robotiku'
+  )
+  WHERE sifOrgjed = (
+      SELECT sifOrgjed
+      FROM orgjed
+      WHERE nazOrgjed = 'Zavod za primijenjeno racunarstvo'
+  );
+
+
+3️⃣ Ispisati šifre predmeta koji imaju prosjek pozitivnih ocjena > 3.
+
+SELECT sifPred
+FROM ispit
+WHERE ocjena > 1
+GROUP BY sifPred
+HAVING AVG(ocjena) > 3;
+
+
+1️⃣ Kreirati indeks pred1 nad pred tako da u jednoj org. jedinici
+ne može postojati više predmeta sa istim nazivom i kraticom.
+
+  CREATE UNIQUE INDEX pred1
+  ON pred (sifOrgjed, nazPred, kratPred);
+
+
+2️⃣ Relaciju stud1(mbrStud, prezStud, imeStud) napuniti studentima 
+rođenim u mjestu 'Karlovac'.
+
+  INSERT INTO stud1 (mbrStud, prezStud, imeStud)
+  SELECT s.mbrStud, s.prezStud, s.imeStud
+  FROM stud s
+  WHERE s.pbrRod = (
+      SELECT m.pbr
+      FROM mjesto m
+      WHERE m.nazMjesto = 'Karlovac'
+  );
+
+3️⃣ Kopirati pred u privremenu tabelu pred1, pa iz pred1 obrisati
+sve predmete čiji naziv počinje samoglasnikom (A,E,I,O,U).
+
+  CREATE TEMPORARY TABLE pred1 AS
+  SELECT * FROM pred;
+
+  DELETE FROM pred1
+  WHERE nazPred RLIKE '^[AEIOU]';
+
+
+4️⃣ Svi nastavnici sa orgjed 'Fakultet elektrotehnike'
+premješteni su na 'Fakultet elektrotehnike i računarstva'.
+
+  UPDATE nastavnik
+  SET sifOrgjed = (
+      SELECT sifOrgjed
+      FROM orgjed
+      WHERE nazOrgjed = 'Fakultet elektrotehnike i racunarstva'
+  )
+  WHERE sifOrgjed = (
+      SELECT sifOrgjed
+      FROM orgjed
+      WHERE nazOrgjed = 'Fakultet elektrotehnike'
+  );
+
+
+1️⃣ Ispisati ime, prezime nastavnika i prosječan prosjek svih 
+položenih ispita koje je ocijenio, gdje prosjek > 3.5.
+
+  SELECT n.imeNastavnik,
+         n.prezNastavnik,
+         AVG(i.ocjena) AS prosjek
+  FROM nastavnik n
+  JOIN ispit i ON i.sifNastavnik = n.sifNastavnik
+  WHERE i.ocjena > 1
+  GROUP BY n.sifNastavnik, n.imeNastavnik, n.prezNastavnik
+  HAVING AVG(i.ocjena) > 3.5;
+
+
+2️⃣ Svi predmeti sa npr. orgjed 'Zavod za primijenjeno računarstvo'
+premješteni su na 'Zavod za AR'.
+
+UPDATE pred
+SET sifOrgjed = (
+    SELECT sifOrgjed
+    FROM orgjed
+    WHERE nazOrgjed = 'Zavod za AR'
+)
+WHERE sifOrgjed = (
+    SELECT sifOrgjed
+    FROM orgjed
+    WHERE nazOrgjed = 'Zavod za primijenjeno racunarstvo'
+);
+

@@ -1,0 +1,124 @@
+1️⃣ Kreiraj indeks tako da nastavnik može održati ispit iz nekog 
+predmeta samo jednom u toku dana.
+
+
+
+2️⃣ Studenti koji su stanovali u Dubrovniku preselili su se u Zagreb.
+Poštanske brojeve ne znaš napamet, ali ih dobijaš iz tabele mjesto.
+
+
+
+3️⃣ Svi predmeti čija se organizaciona jedinica zove 'AR' 
+premješteni su u organizacionu jedinicu 'RI'.
+
+Šifre organizacionih jedinica nisu poznate direktno.
+
+
+
+4️⃣ Ispiši šifre predmeta koji imaju prosjek pozitivnih ocjena 
+veći od 3.
+
+
+1️⃣ Provjeriti postojanje funkcijske zavisnosti
+prezNastavnik, koef → sifOrgjed u relaciji nastavnik.
+
+
+2️⃣ Kreirati privremenu relaciju orgjedTMP
+
+koja ima sve atribute kao orgjed + atribute:
+
+UpStud = ukupan broj upisanih studenata (suma upisanoStud) 
+na svim predmetima te org. jedinice
+
+PrUpStud = prosječan broj upisanih studenata na predmetima 
+te org. jedinice.
+
+
+1️⃣ Postaviti indeks na 3 atributa u relaciji pred 
+(npr. sifOrgjed, nazPred, brojSatiTjedno).
+
+
+
+2️⃣ Napraviti TEMPORARY TABLE ispit1 istu kao ispit, 
+i obrisati sve ispite prije 2000. godine.
+
+
+
+3️⃣ Za svaku dvoranu ispisati: oznaku, kapacitet, 
+broj različitih predmeta
+
+koji se u njoj održavaju. Sortirati po broju predmeta 
+opadajuće, a za iste brojeve po oznaci dvorane uzlazno.
+
+
+4️⃣ Ispisati mbrStud, prezime i broj nepoloženih ispita (ocjena = 1).
+Ispisati samo studente koji su pali na više od 9 ispita.
+
+
+🔹 BLOK 5 (kraće formulisan)
+1️⃣ Izbrisati studente rođene prije 1985.
+
+
+
+2️⃣ Svi iz jedne org. jedinice premješteni u drugu 
+(generalni oblik).
+Npr. sa 'Stara orgjed' na 'Nova orgjed':
+
+3️⃣ Napuniti privremenu tabelu sa: sifPred, nazPred, 
+broj položenih ispita, prosječnom ocjenom.
+
+
+4️⃣ Ispisati prezime, ime nastavnika i prosječnu ocjenu 
+svih položenih ispita
+koje je on ocijenio, ali samo ako je prosjek > 3.5.
+
+
+🔹Za svaki B (nadorgjed) ispisati šifru, naziv i broj 
+podređenih orgj. jedinica.
+
+
+
+1️⃣ Indeks ispit1 da jedan nastavnik ne može držati 
+ispite iz više predmeta u istom danu.
+
+
+2️⃣ Relaciju pred1(sifPred, kratPred, nazPred) napuniti 
+predmetima iz pred koji pripadaju org. jedinici 
+'Zavod za primijenjeno računarstvo'.
+
+3️⃣ Sve podatke iz stud prekopirati u privremenu tabelu stud1.
+Iz stud1 obrisati sve studente rođene nakon 1985.
+
+
+4️⃣ Svi predmeti sa orgjed 'Zavod za primijenjeno računartvo'
+premješteni su na orgjed 'Zavod za automatiku i robotiku'.
+Unijeti to u pred.
+
+
+3️⃣ Ispisati šifre predmeta koji imaju prosjek pozitivnih ocjena > 3.
+
+
+
+1️⃣ Kreirati indeks pred1 nad pred tako da u jednoj org. jedinici
+ne može postojati više predmeta sa istim nazivom i kraticom.
+
+
+2️⃣ Relaciju stud1(mbrStud, prezStud, imeStud) napuniti studentima 
+rođenim u mjestu 'Karlovac'.
+
+3️⃣ Kopirati pred u privremenu tabelu pred1, pa iz pred1 obrisati
+sve predmete čiji naziv počinje samoglasnikom (A,E,I,O,U).
+
+
+
+4️⃣ Svi nastavnici sa orgjed 'Fakultet elektrotehnike'
+premješteni su na 'Fakultet elektrotehnike i računarstva'.
+
+
+
+1️⃣ Ispisati ime, prezime nastavnika i prosječan prosjek svih 
+položenih ispita koje je ocijenio, gdje prosjek > 3.5.
+
+
+2️⃣ Svi predmeti sa npr. orgjed 'Zavod za primijenjeno računarstvo'
+premješteni su na 'Zavod za AR'.
