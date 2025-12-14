@@ -483,6 +483,19 @@ JOIN (
    AND d.sifProizvod = put.sifProizvod
 SET put.cijena = put.cijena * 0.95;
 ```
+Drugi nacin:
+
+```SQL
+UPDATE proizvodUTrgovini put
+SET put.cijena = put.cijena * 0.95
+WHERE (put.sifTrgovina, put.sifProizvod) IN (
+    SELECT d.sifTrgovina, d.sifProizvod
+    FROM dnevnik d
+    WHERE d.datum >= CURDATE() - INTERVAL 45 DAY
+    GROUP BY d.sifTrgovina, d.sifProizvod
+    HAVING COUNT(*) > 3
+);
+```
 
 b) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina) 
 napuniti podacima o proizvodima u trgovinama i pripadnim mjesecima i godinama
