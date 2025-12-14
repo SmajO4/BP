@@ -46,7 +46,7 @@ r(A    B    C)      s(A    B    C    D)     t(D    E)
   2   null  bb        1    X    ac  null
 ```
 
-***Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati):***
+***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
 
 <!-- a) π_D (r |><| s) ∩ π_D (t) -->
 a) $a)\ \pi_D (r ⋈ s) \cap \pi_D (t)$ (1b)
@@ -68,6 +68,9 @@ operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)***
 
 > 14.12.2017 A
 
+- ***Sta podrazumijevamo pod pojmom integritet baze podataka i koja 
+pravila integriteta postoje?) (3b)***
+
 - ***Sta podrazumijevamo pod pojmom horizontalne normalizacije relacija? 
 Ilustrovati na vlastitom primjeru. (3b)*** 
 
@@ -83,7 +86,7 @@ r(A    B)      s(A    B    C    D)     t(D    E)
   c   null       c   null  4    5        5    4
   b    h        
 ```
-***Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati):***
+***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
 
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
 a) $\pi_{A,B} (s ⋈ t) \cap r$
@@ -95,12 +98,12 @@ b) `SELECT SUM(DISTINCT C), COUNT(D) FROM s WHERE B <> 'n'`
 > 14.12.2017 B
 
 - ***Navedite pravila za rukovanje NULL vrijednostima u osnovnim logickim
-operacijama, relacijskim i aritmetickim izrazima?***
+operacijama, relacijskim i aritmetickim izrazima? (3b)***
 
 - ***Navedite moguce strategije odrzavanja referensijskog integriteta pri 
 brisanju n-torke. Koje od navedenih strategija se ne smiju koristiti ukoliko
 se brise n-torka ciji je primarni kljuc strani kljuc neke druge relacije i 
-ujedno dio njezinog primarnog kljuca?***
+ujedno dio njezinog primarnog kljuca? (3b)***
 
 - ***Zadane su relacije:***
 
@@ -114,12 +117,41 @@ r(A    B)      s(A    B    C    D)     t(D    E)
   c   null       c   null  4    5        5    4
   b    m        
 ```
-***Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati):***
+***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
 
 <!-- a) π_(A,B) (s |><| t) ∩ r -->
 a) $\pi_{D} (r ⋈ s) \cap \pi_{t}$
 
 b) `SELECT SUM(DISTINCT E), COUNT(D) FROM t WHERE E < 4`
+
+---
+
+> 12.12.2014 A
+
+- ***Koja su to korisnicka pravila integriteta i na koji nacin se definisu 
+u SQLU-u? Navedite vlasitit primjer. (3b)***
+
+- ***Sta su to regularni i slabi entiteti i na koji nacin se prikazuju u 
+ER modelu? (3b)***
+
+- ***Zadane su relacije:***
+
+```text
+r(A    B   C)      s(A    B    D)     t(D    E)
+-------------      --------------     ---------
+ null null c        null null  d        d    e
+  a   null c         k    b   null     null  g
+  n   null c         k    b    d
+  m   null f
+  k    b   f
+
+```
+***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
+
+a) $\sigma_{A <> ? OR B <> ?}(r)$
+
+b) $\pi_{A,B}(r) \ \pi_{A,B}(s)$
+
 
 
 
