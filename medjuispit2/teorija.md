@@ -47,7 +47,9 @@ r(A    B    C)      s(A    B    C    D)     t(D    E)
 ```
 
 Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati) 
-a) π₍ᴰ₎(r |><| s) ∩ π₍ᴰ₎ (t)
+
+a) π_D (r |><| s) ∩ π_D (t)
+
 b) `SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'`
 
 
