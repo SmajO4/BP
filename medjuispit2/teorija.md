@@ -148,7 +148,7 @@ r(A    B   C)      s(A    B    D)     t(D    E)
 ```
 ***Napisite rezultate obavljanja sljedecih operacija (SQL upite nije potrebno pisati):***
 
-a) $\sigma_{A <> ? OR B <> ?}(r)$
+a) $\sigma_{\text{A <> ? OR B <> ?}}(r)$
 
 b) $\pi_{A,B}(r) \ \pi_{A,B}(s)$
 
