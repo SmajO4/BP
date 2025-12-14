@@ -1,0 +1,276 @@
+18.12.2018 C
+------------
+
+Napisati po jednu SQL naredbu za svaki sljedeci zadatak.
+Upiti moraju biti neovisni o datumu izvodjenja.
+Nece se priznavati rjesenja u kojima se nepotrebno koriste podupiti.
+
+trgovina:                     proizvod:
+*sifTrgovina                  *sifProizvod 
+ nazivTrgovina NOT NULL        nazivProizvod
+ adresa                        
+
+proizvodUTrgovini       dnevnik:
+*sifTrgovina            *sifTrgovina
+*sifProizvod            *sifProizvod
+ datum NOT NULL         *datum
+ cijena NOT NULL        cijena NOT NULL
+
+a) Ispisati rang listu proizvoda u trgovinama prema broju izmjene cijene 
+u toku posljednih 45 dana. Ispisivati naziv proizvoda i naziv trgovine,
+te broj izmjena cijene. Upit mora biti neovistan o datumu kada se upit 
+izvodi. Blize vrhu liste se nalaze proizvodi sa vise izmjena cijene, a 
+proizvode sa eventualnim istim brojem izmjena poredati abecedno po nazivu
+proizvoda i nazivu trgovine. (2b)
+
+b) Proizvodima u trgovinama cija cijena nije mijenjana u proteklih mjesec
+dana smanjiti cijenu za 10% (2b)
+
+c) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina,
+brIzmjena) napuniti podacima o svim proizvodima u trgovinama i pripadnim
+mjesecima i godinama u kojima je vise od pet puta tokom doticnog mjeseca 
+mijenjana cijena proizvoda u toj trgovini.
+
+------------------------------------------------------------------------
+18.12.2018 C
+------------
+U bazi podataka kreirane su tablice:
+
+PLOVIDBA                                            LUKA        BROD
+*regBrBrod    - registarski broj broda              *sifLuka    *regBrBrod    - registarski broj broda
+*datPolaska   - datum poslaska broda                 nazLuka     imeBrod      - ime broda
+ sifLukaOd    - sifra luke iz koje broj polazi                   nosivost     - najveca ukupna tezina koju brod moze ukrcati (u t)
+ sifLukaDo    - sifra luke u koju brod dolazi                    sifMaticLuka - sifra maticne luke broda (luka u kojoj je registrovan)
+ datDolaska   - datum dolaska broda u luku u koju plovi
+ ukUkrcTezina - ukupna ukrcana tezina na brod u datoj plovidbi
+
+a) Ispisati rang listu brodova prema ukupnoj tezini tereta koju su prevozili 
+sa svim svojim plovidbama. Ispisati registarski broj broda, ime broda i ukupnu
+i prosjecnu tezinu tereta. Blize pocetku liste nalaze se brodovi s vecom 
+ukupnom tezinom tereta. Brodove koji eventualno imaju jednaku ukupnu tezinu
+tereta poredati abecedno po imenu broda (2b)
+
+b) Nosivost brodova koji su obavili vise od 1000 plovidbi smanjiti za 10% (2b)
+
+c) Obrisati podatke o svim lukama iz kojih nisu isplovaljavali brodovi nosivosti
+vece od 100t (2b)
+
+
+------------------------------------------------------------------------
+
+14.12.2017 B
+-------------
+
+U bazi podataka BIBLIOTEKA nalaze se relacije:
+
+KNJIGA              STUDENT             PREDMET
+*sifKnj NOT NULL    *JMBG NOT NULL      *sifPred NOT NULL
+ naslov NOT NULL     ime NOT NULL        nazPred NOT NULL 
+ cijena              prezime NOT NULL
+
+LITERATURA
+*sifPred NOT NULL       - sifra predmeta
+*sifKnj NOT NULL        - sifra knjige
+ rbr NOT NULL           - redni broj vaznosti literature za predmete
+                          (za svaki predmet krece od 1)
+ obavezna NOT NULL      - D-obavezna literatura, N-neobavezna literatura
+
+POSUDBA
+*JMBG     NOT NULL    - JMBG studenta
+*sifKnj   NOT NULL    - sifra knjige
+*datumPos NOT NULL    - datum posudbe
+datumDo   NOT NULL    - rok vracanja knjige (datum do kojeg student mora 
+                        vratiti knjigu)
+datumVra              - datum vracanja knjige
+
+a) Ispisati rang listu knjiga prema popularnosti posudjivanja njihovih 
+primjeraka u prosloj godini. Ispisati sifru, naslov i ukupan broj posdubi
+knjige. Blize vrhu liste se nalaze knjige koje imaju najvise posudbi.
+Knjige sa jednakim brojem posudbi poredati abecedno po naslovu (2b)
+
+b) Ispisati JMBG, ime, prezime studenta i ukupnu vrijednost knjiga cije 
+je primjerke student posudjivao, za one studente za koje je ta ukupna 
+vrijednost najveca (2b)
+
+c) Knjigama za koje nije navedena cijena, a posudjene su vise od 30 puta 
+u jednoj godini, postaviti cijenu na 50KM (2b)
+
+d) Postojecu relaciju kasnjenje koja ima istu shemu kao relacija knjiga 
+napuniti podacima o knjigama koje su trenutno posudjene, a koje nikada 
+nisu vracene na vrijeme. (2b)
+
+------------------------------------------------------------------------
+
+14.12.2017 A
+------------
+
+U bazi podataka PREVOZ nalaze se relacije:
+
+VOZAC                                       TERET
+*sif_vozac    - sif vozaca                  *sif_teret  - sifra tereta
+prez_vozac    - prezime vozaca               naz_teret  - naziv tereta
+ime_vozac     - ime vozaca                   tezina     - tezina tereta u tonama
+      
+VOZNJA                                      VOZILO
+*sif_voznja   - sifra voznje                *regbr    - registarski broj vozila
+sif_vozac     - sifra voazca                 tip      - tip vozila
+sif_teret     - sifra tereta                 nosivost - nosivost vozila (u tonama)
+datum         - datum obavljanja prevoza
+regbr         - registarski broj vozila                   LOKACIJA:
+broj_km       - broj predjenih (prevezenih) kilometara    *sif_lok  - sifra lokacije
+sif_lok_od    - sifra lokacije od koje se prevozi teret    naz_lok  - naziv lokacije
+sif_lok_do    - sifra lokacije do koje se prevozi teret    adresa   - adresa u kojoj se lokacija nalazi
+                                                           grad     - grad u kojem se lokacija nalazi
+
+a) Ispisati rang listu vozaca prema ukupnom broju kilometara koje je vozaca
+prevezao. U ispisu se moraju vidjeti svi podaci o vozacu i ukupan broj km 
+koje je vozac prevezao. Vozaci s vise predjenih kilometara trebaju se nalaziti
+blizke pocetku liste. Vozace koji su prevezli isti broj kilometara poredati po 
+prezimenu i imenu. (2b)
+
+b) Ispisati sve podatke o vozilima kojima je proteklih 3 godine obavljeno 
+vise od 100 voznji i koji su presli vise od 10000km (2b)
+
+c) Svim vozilima koja su barem jednom prevozila teret cija tezina prelazi 10t,
+smanjiti podatak o nosivosti tako da im se nosivost umanji za 10% prosjecne 
+tezine tereta prevezene na svim njihovim voznjama (2b)
+
+d) Obrisati sve podatke iz relacije vozac, za one vozace koji nikada nisu 
+vozili na relaciji "Luka Ploce" - "Solana Tuzla" (2b)
+
+
+------------------------------------------------------------------------
+
+12.12.2014 A
+------------
+
+Baza podataka trgovackiLanac ime kreirane relacije:
+
+trgovina:                     proizvod:
+*sifTrgovina                  *sifProizvod 
+ nazivTrgovina NOT NULL        nazivProizvod
+ adresa                        
+
+proizvodUTrgovini       dnevnik:
+*sifTrgovina            *sifTrgovina
+*sifProizvod            *sifProizvod
+ datum NOT NULL         *datum
+ cijena NOT NULL        cijena NOT NULL
+
+
+a) Svim proizvodima u trgovinama kojima je u toku posljednih 45 dana cijena 
+mijenjana vise od 3 puta umanjiti cijenu za 5% (2b)
+
+b) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina) 
+napuniti podacima o proizvodima u trgovinama i pripadnim mjesecima i godinama
+u kojima je vise od pet puta tokom doticnog mjeseca mijenjana cijena proizvoda
+u toj trgovini (2b)
+
+
+------------------------------------------------------------------------
+18.12.2018 C
+
+
+------------------------------------------------------------------------
+
+05.12.2023 B
+------------
+
+Medju ucenicima koji zavrsavaju srednju skolu i zele se upisati na fakultet 
+provedena je anketa. U bazi podataka nalaze se relacije:
+
+MJESTO                        SKOLA                                       
+*pbr      - postanski broj    *sifSkola   - sifra skole
+nazMjesto - naziv mjesta       nazSkola   - naziv skole
+                               pbrSkola   - postanski broj mjesta u kojem se nalazi skola
+
+                                FAKULTET
+                                *sifFakultet    - sifra fakulteta
+UCENIK                           nazFakultet    - naziv fakulteta
+*jmbg       - JMBG ucenika       pbrFakultet    - postanski broj mjesta u kojem se nalazi
+prezUcenik  - prezime ucenika    adresaFakultet - adresa 
+imeUcenik   - ime ucenika
+sifSkola    - sifra srednje skole koje ucenik pohadja
+sifFakultet - sifra fakulteta na kojeg se ucenik zeli upisati
+opciUspjeh  - opci uspjeh (ocjena 2-5)
+datAnketa   - datum anketiranja ucenika
+
+a) Ispisati ukupan broj i prosjecan opci uspjeh ucenika koji pohadjaju 
+srednju skolu u mjesecima ciji naziv zapoicnje slovima od S do Z i anketirani
+su bilo kojeg radnog dana u posljednjem tromjesjecu prosle godine (3b)
+
+b) Ispisati jmbg, ime i prezime ucenika, naziv mjesta srednje skole i mjesta 
+fakulteta za ucenike koji ne pohadjaju srednju skolu u istom mjestu u kojem 
+se nalazi fakultet na kojeg se zele upisati (3b)
+
+c) Za svako mjesto u kojem pohadja srednju skolu neki od anktetiranih ucenika
+ispisati postanski broj, naziv mjesta, te ukupan broj razlicitih fakulteta na 
+koje se zele upisati anketirani ucenici iz tog mjesta. Rezultate poredati tako
+da se mjesta s vecim brojem fakulteta na koje se zele upisati anketirani 
+ucenici nalaze blice pocetku liste. Mjesta u kojima ima jednak broj razlicitih
+fakulteta poredati po abecedi. U ispis ukljuciti samo mjesta u kojima je broj
+razlicitih fakulteta koje zele upisati ucenici veci od prosjecnog opceg uspjeha
+svih anketiranih ucenika koji ne pohadjaju skolu iz tog mjesta (3b)
+
+d) Ipisati naziv fakulteta i naziv mjesta u kojem se fakultet nalazi za sve 
+fakultete koje ne zeli upisati nijedan ucenik anketiran u tekucoj godini. (3b)
+
+e) Svi ucenici koji su pohadjali srednju skolu Prva opsta gimnazija prebaceni
+su u skolu koja ima najmanje anktetiranih ucenika. Ovu promjenu potrebno je 
+evidentirati u bazi podataka (3b)
+
+------------------------------------------------------------------------
+
+05.12.2023 A 
+------------
+
+Data je baza podataka MEHANICARSKA_RAD u kojoj se nalaze relacije:
+
+AUTOMOBIL                                     MODEL
+*tvBr        - tvornicki broj automobila      *sifProizv  - sifra proizvodjaca automobila
+ godProizv   - godina proizvodnje             *nazModel   - naziv modela
+ sifProizvod - sifra proizvodjaca automobila   godProizv  - godina kada je model prvi puta proizveden
+ nazModel    - naziv modela
+
+MEHANICAR                                   VRSTA_POSLA
+*jmbg                                       *sifVrPosla   - sifra vrste posla
+ prezMeh                                     opVrPosla    - opis vrste posla
+ imeMeh                                      normativ     - vrijeme koje mehanicar potrosi za
+                                                            obavljanje date vrste posla (u min)
+ sifVrPosla - sifra vrste posla za koju je  RADNI_NALOG
+              mehanicar specijaliziran      *redBt  - redni broj naloga
+ koef       - koeficjent za platu            datDol - datum dolaska automobila u radionicu
+                                             tvBr   - tvornici broj automobila
+
+OBAVIO
+*redBr      - redni broj naloga
+*datVol     - datum dolaska automobila u radionicu
+*sifVrPosla - sifra vrste posla koja se obavlja na radnom nalogu
+jmbg        - jmbg mehanicara koji obavlja dati posao
+trajanje    - vrijeme koje je mehanicar utrosio za obavljanje datog posla (min)
+
+
+a) Ispisati nazive proizvodjaca i modela svih automobila koji su u proteklih
+10 dana primljeni u radionicu.
+Svaka kombinacija u potpisu treba da se pojavi samo jednom (3b)
+
+b) Ispisati podatke o mehanicarima (jmbg, prezime i ime), opis vrste posla
+za koju su specijalizirani i opis vrste posla koju su obavili na automobilu
+i njegov tvornicki broj za one mehanicare koji su bar jednom u toku prosle 
+godine obavili vrstu posla za koju nisu specijalizirani. (3b)
+
+c) Ispisati rang listu mehanicara prem aukupnom broju obavljenih poslova.
+Ispisati jmbg, prezime, ime i ukupan broj poslova. Blize pocetku liste nalaze 
+se mehanicari koji su obavili veci dio poslova.
+Mehanicare koji su eventualno obavili jednak broj poslova poredati abecedno 
+po prezimenu. U ispis ukljiciti samo mehanicare ciji je broj obavljenih 
+poslova veci od broja razlicitih vrsta poslova obavljenih na svim automobilima
+(3b)
+
+d) Ispisati nazive proizvodjaca i nazive modela na cijim automobilima nikada
+nije obavljena vrsta posla "Zamjena vodene pumpe" (3b)
+
+e) Svim mehanicarima koji su obavili vise od 500 poslova na bilo kojem 
+automobilu postaviti sifru vrste posla za koji je specijaliziran na sifru 
+vrste posla koju je taj mehanicar posljednju obavio (prepotsavlja se da je taj
+dan obavljao samo tu vrstu posla) (3b)
