@@ -150,7 +150,7 @@ r(A    B   C)      s(A    B    D)     t(D    E)
 
 a) $\sigma_{\text{A <> ? OR B <> ?}}(r)$
 
-b) $\pi_{A,B}(r) \ \pi_{A,B}(s)$
+b) $\pi_{A,B}(r) \setminus \pi_{A,B}(s)$
 
 
 
