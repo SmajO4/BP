@@ -29,8 +29,8 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 > 18.12.2018 C
 
 > [!NOTE]
-> Koje su strategije odrzavanja referencijskog integriteta za kriticne 
-> operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)
+> ***Koje su strategije odrzavanja referencijskog integriteta za kriticne 
+> operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)***
 
 Kritične operacije su: 
 
@@ -42,12 +42,42 @@ kao strani ključ u drugim relacijama.
 
 Glavne strategije su:
 
-***Zabrana operacije (NO ACTION / RESTRICT)***
+- ***Zabrana operacije (NO ACTION / RESTRICT)***
 
-- 
+    - Brisanje ili izmjena ciljne n-torke se odbija ako postoje zavisne (pozivajuce)
+    n-torke; korisnik dobije gresku i nista se ne mijenja.
 
+- ***Kaskadna promjena (CASCADE) ***
 
+    - `ON DETELE CASCADE`: pri brisanju ciljne n-torke automatski se brisu sve 
+    pozivajuce n-torke koje se na nju pozivaju.
 
+    - `ON UPDATE CASCADE`: pri promjeni primarnog kljuca roditelja, automatski se 
+    azuriraju vrijednosti stranih kljuceva u svim pozivajucim n-torkama.
+
+- ***Postavljanje na NULL (SET NULL) ***
+
+    - `ON DELETE / ON UPDATE SET NULL`: strani ključ u svim pozivajućim n-torkama 
+    se postavlja na *NULL*, pod uslovom da je strani ključ dozvoljeno da bude NULL 
+    (atribut je nullable).
+
+- ***Postavljanje na podrazumijevanu vrijednost (SET DEFAULT)***
+
+    - `ON DELETE/ON UPDATE SET DEFAULT`: strani ključ se postavlja na definisanu 
+    podrazumijevanu vrijednost, koja mora biti ili *NULL* ili primarni ključ neke 
+    postojeće n-torke roditeljske relacije.
+
+Stategija koja ima ogranicenje i razlog:
+
+- ***Stategija SET NULL i SET DEFAULT imaju ogranicenje primjene:
+
+    - *SET NULL* se ne smije koristiti kada strani kljuc ne smije biti *NULL*,
+    tj. kada je strani kljuc dio primarnog kljuca pozivajuce relacije 
+    (entitetski integritet + ogranicenje na *NULL*).
+
+    - *SET DEFAULT* se ne smije koristiti ako podrazumijevana vrijednost nije 
+    dozvoljena (nema definisan *DEFAULT* ili ne zadovoljava referencijski integritet),
+    tj. ne postoji odgovarajuci primarni kljuc u roditeljskoj relaciji).
 
 
 - ***Zadane su relacije:***
