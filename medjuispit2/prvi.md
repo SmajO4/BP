@@ -741,20 +741,16 @@ Drugi nacin:
 ```SQL
 UPDATE UCENIK
 SET sifSkola = (
-    SELECT sMin.sifSkola
-    FROM (
-        SELECT u2.sifSkola, COUNT(*) AS br_ucenika
-        FROM UCENIK u2
-        GROUP BY u2.sifSkola
-        ORDER BY br_ucenika ASC
-        LIMIT 1
-    ) AS sMin
+    SELECT sifSkola
+    FROM UCENIK
+    GROUP BY sifSkola
+    ORDER BY COUNT(*) ASC
+    LIMIT 1
 )
 WHERE sifSkola = (
-    SELECT s1.sifSkola
-    FROM SKOLA s1
-    WHERE s1.nazSkola = 'Prva opsta gimnazija'
-    LIMIT 1
+    SELECT sifSkola
+    FROM SKOLA
+    WHERE nazSkola = 'Prva opsta gimnazija'
 );
 ```
 ---
