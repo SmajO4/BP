@@ -90,6 +90,37 @@ a) $\pi_{A,B} (s ⋈ t) \cap r$
 
 b) `SELECT SUM(DISTINCT C), COUNT(D) FROM s WHERE B <> 'n'`
 
+---
+
+> 14.12.2017 B
+
+- ***Navedite pravila za rukovanje NULL vrijednostima u osnovnim logickim
+operacijama, relacijskim i aritmetickim izrazima?***
+
+- ***Navedite moguce strategije odrzavanja referensijskog integriteta pri 
+brisanju n-torke. Koje od navedenih strategija se ne smiju koristiti ukoliko
+se brise n-torka ciji je primarni kljuc strani kljuc neke druge relacije i 
+ujedno dio njezinog primarnog kljuca?***
+
+- ***Zadane su relacije:***
+
+```text
+r(A    B)      s(A    B    C    D)     t(D    E)
+---------      -------------------     ---------
+  a    m         b    m   null null      3    1
+ null  m         a    n   null  5        5   null
+  b    n         b    n    4    9        7    1
+ null null       a    m    6    3       null null
+  c   null       c   null  4    5        5    4
+  b    m        
+```
+***Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati):***
+
+<!-- a) π_(A,B) (s |><| t) ∩ r -->
+a) $\pi_{D} (r ⋈ s) \cap \pi_{t}$
+
+b) `SELECT SUM(DISTINCT E), COUNT(D) FROM t WHERE E < 4`
+
 
 
 
