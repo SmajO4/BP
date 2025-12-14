@@ -578,6 +578,8 @@ JOIN PREDAJE pr
 SET pv.trajanje = pv.trajanje * 1.2
 WHERE pr.nosilac = 0;
 ```
+Drugi nacin:
+
 ```SQL
 UPDATE PROVJERA
 SET trajanje = trajanje * 1.2
