@@ -61,6 +61,18 @@ HAVING MAX(d.datum) < CURDATE() - INTERVAL 1 MONTH
    OR MAX(d.datum) IS NULL
 SET put.cijena = put.cijena * 0.9;
 ```
+Drugi nacin:
+```SQL
+UPDATE proizvodUTrgovini
+SET cijena = cijena * 0.95
+WHERE (sifTrgovina, sifProizvod) IN (
+    SELECT sifTrgovina, sifProizvod
+    FROM dnevnik
+    WHERE datum >= CURDATE() - INTERVAL 45 DAY
+    GROUP BY sifTrgovina, sifProizvod
+    HAVING COUNT(*) > 3
+);
+```
 
 c) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina,
 brIzmjena) napuniti podacima o svim proizvodima u trgovinama i pripadnim
@@ -132,6 +144,17 @@ JOIN (
     HAVING COUNT(*) > 1000
 ) p ON p.regBrBrod = b.regBrBrod
 SET b.nosivost = b.nosivost * 0.9;
+```
+Drugi nacin:
+```SQL
+UPDATE BROD
+SET nosivost = nosivost * 0.9
+WHERE regBrBrod IN (
+  SELECT regBrBrod
+  FROM PLOVIDBA
+  GROUP BY regBrBrod
+  HAVING COUNT(*) > 1000
+);
 ```
 
 c) Obrisati podatke o svim lukama iz kojih nisu isplovaljavali brodovi nosivosti
@@ -244,6 +267,18 @@ JOIN (
 SET k.cijena = 50
 WHERE k.cijena IS NULL;
 ```
+Drugi nacin:
+```SQL
+UPDATE KNJIGA
+SET cijena = 50
+WHERE cijena IS NULL
+  AND sifKnj IN (
+        SELECT sifKnj
+        FROM POSUDBA
+        GROUP BY sifKnj, YEAR(datumPos)
+        HAVING COUNT(*) > 30
+  );
+```
 
 d) Postojecu relaciju kasnjenje koja ima istu shemu kao relacija knjiga 
 napuniti podacima o knjigama koje su trenutno posudjene, a koje nikada 
@@ -350,6 +385,23 @@ JOIN (
     HAVING MAX(t.tezina) > 10
 ) x ON x.regbr = v.regbr
 SET v.nosivost = v.nosivost - 0.1 * x.prosj_tezina;
+```
+Drugi nacin:
+```SQL
+UPDATE VOZILO
+SET nosivost = nosivost - 0.1 * (
+    SELECT AVG(t.tezina)
+    FROM VOZNJA v
+    JOIN TERET t ON t.sif_teret = v.sif_teret
+    WHERE v.regbr = VOZILO.regbr
+)
+WHERE regbr IN (
+    SELECT v2.regbr
+    FROM VOZNJA v2
+    JOIN TERET t2 ON t2.sif_teret = v2.sif_teret
+    GROUP BY v2.regbr
+    HAVING MAX(t2.tezina) > 10
+);
 ```
 
 d) Obrisati sve podatke iz relacije vozac, za one vozace koji nikada nisu 
@@ -483,6 +535,16 @@ JOIN PREDAJE pr
  AND pr.sifNast = pv.sifNast
 SET pv.trajanje = pv.trajanje * 1.2
 WHERE pr.nosilac = 0;
+```
+```SQL
+UPDATE PROVJERA
+SET trajanje = trajanje * 1.2
+WHERE (sifPred, sifNast) IN (
+    SELECT sifPred, sifNast
+    FROM PREDAJE
+    WHERE nosilac = 0   -- ili 'N' ako je tako zapisano
+);
+
 ```
 c) Obrisati sve podatke o provjerama na koje je prijavljeno manje od 5 
 studenata (2b)
@@ -630,6 +692,27 @@ WHERE u.sifSkola = (
     LIMIT 1
 );
 ```
+Drugi nacin:
+
+```SQL
+UPDATE UCENIK
+SET sifSkola = (
+    SELECT sMin.sifSkola
+    FROM (
+        SELECT u2.sifSkola, COUNT(*) AS br_ucenika
+        FROM UCENIK u2
+        GROUP BY u2.sifSkola
+        ORDER BY br_ucenika ASC
+        LIMIT 1
+    ) AS sMin
+)
+WHERE sifSkola = (
+    SELECT s1.sifSkola
+    FROM SKOLA s1
+    WHERE s1.nazSkola = 'Prva opsta gimnazija'
+    LIMIT 1
+);
+```
 ---
 
 > 05.12.2023 A 
@@ -760,6 +843,24 @@ WHERE m.jmbg IN (
     SELECT jmbg
     FROM OBAVIO
     GROUP BY jmbg
+    HAVING COUNT(*) > 500
+);
+```
+Drugi nacin:
+
+```SQL
+UPDATE MEHANICAR
+SET sifVrPosla = (
+    SELECT o1.sifVrPosla
+    FROM OBAVIO o1
+    WHERE o1.jmbg = MEHANICAR.jmbg
+    ORDER BY o1.datVol DESC
+    LIMIT 1
+)
+WHERE jmbg IN (
+    SELECT j2.jmbg
+    FROM OBAVIO j2
+    GROUP BY j2.jmbg
     HAVING COUNT(*) > 500
 );
 ```
