@@ -29,10 +29,10 @@ onda se uslov selekcije odn spajanja mora evaluirati kao true.
 
 > 18.12.2018 C
 
-- Koje su strategije odrzavanja referencijskog integriteta za kriticne 
-operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto? (3b)
+- ***Koje su strategije odrzavanja referencijskog integriteta za kriticne 
+operacije? Za koju od strategija postoji ogranicenje u primjeni i zasto?*** (3b)
 
-- Zadane su relacije:
+- ***Zadane su relacije:***
 
 ```text
 r(A    B    C)      s(A    B    C    D)     t(D    E)
@@ -46,12 +46,12 @@ r(A    B    C)      s(A    B    C    D)     t(D    E)
   2   null  bb        1    X    ac  null
 ```
 
-Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati) 
+***Napisite rezultate obavljanaj sljedecih operacija (SQL upite nije potrebno pisati):***
 
 <!-- a) π_D (r |><| s) ∩ π_D (t) -->
-a) $a)\ \pi_D (r ⋈ s) \cap \pi_D (t)$
+a) ***$a)\ \pi_D (r ⋈ s) \cap \pi_D (t)$***
 
-b) `SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'`
+b) ***`SELECT SUM(D), COUNT(DISTINCT A) FROM s WHERE C <> 'ac'`***
 
 
 
