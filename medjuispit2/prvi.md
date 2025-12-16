@@ -34,7 +34,7 @@ SELECT
 FROM dnevnik d
 JOIN proizvod p      ON d.sifProizvod  = p.sifProizvod
 JOIN trgovina t      ON d.sifTrgovina  = t.sifTrgovina
-WHERE d.datum >= CURDATE() - DATE_SUB(curdate(), INTERVAL 45 DAY)
+WHERE d.datum >= DATE_SUB(curdate(), INTERVAL 45 DAY)
 GROUP BY 
     p.sifProizvod,
     t.sifTrgovina,
@@ -366,54 +366,19 @@ b) Ispisati sve podatke o vozilima kojima je proteklih 3 godine obavljeno
 vise od 100 voznji i koji su presli vise od 10000km (2b)
 
 ```SQL
-SELECT 
-    vozi.*
-FROM VOZILO vozi
-JOIN (
-    SELECT 
-        regbr,
-        COUNT(*)     AS br_voznji,
-        SUM(broj_km) AS ukupno_km
-    FROM VOZNJA
-    WHERE datum >= CURDATE() - INTERVAL 3 YEAR
-    GROUP BY regbr
-    HAVING COUNT(*) > 100
-       AND SUM(broj_km) > 10000
-) x ON x.regbr = vozi.regbr;
-```
-Drugi nacin:
-
-```SQL
-SELECT *
+SELECT v.*
 FROM VOZILO v
-WHERE v.regbr IN (
-    SELECT regbr
-    FROM VOZNJA
-    WHERE datum >= CURDATE() - INTERVAL 3 YEAR
-    GROUP BY regbr
-    HAVING COUNT(*) > 100
-       AND SUM(broj_km) > 10000
-);
+JOIN VOZNJA vz ON v.regbr = vz.regbr
+WHERE vz.datum >= CURDATE() - INTERVAL 3 YEAR
+GROUP BY v.regbr
+HAVING COUNT(*) > 100
+   AND SUM(vz.broj_km) > 10000;
 ```
 
 c) Svim vozilima koja su barem jednom prevozila teret cija tezina prelazi 10t,
 smanjiti podatak o nosivosti tako da im se nosivost umanji za 10% prosjecne 
 tezine tereta prevezene na svim njihovim voznjama (2b)
 
-```SQL
-UPDATE VOZILO v
-JOIN (
-    SELECT 
-        vo.regbr,
-        AVG(t.tezina) AS prosj_tezina
-    FROM VOZNJA vo
-    JOIN TERET t ON t.sif_teret = vo.sif_teret
-    GROUP BY vo.regbr
-    HAVING MAX(t.tezina) > 10
-) x ON x.regbr = v.regbr
-SET v.nosivost = v.nosivost - 0.1 * x.prosj_tezina;
-```
-Drugi nacin:
 ```SQL
 UPDATE VOZILO
 SET nosivost = nosivost - 0.1 * (
@@ -468,23 +433,6 @@ mijenjana vise od 3 puta umanjiti cijenu za 5% (2b)
 
 ```SQL
 UPDATE proizvodUTrgovini put
-JOIN (
-    SELECT 
-        sifTrgovina,
-        sifProizvod,
-        COUNT(*) AS br_izmjena
-    FROM dnevnik
-    WHERE datum >= CURDATE() - INTERVAL 45 DAY
-    GROUP BY sifTrgovina, sifProizvod
-    HAVING COUNT(*) > 3
-) d ON d.sifTrgovina = put.sifTrgovina
-   AND d.sifProizvod = put.sifProizvod
-SET put.cijena = put.cijena * 0.95;
-```
-Drugi nacin:
-
-```SQL
-UPDATE proizvodUTrgovini put
 SET put.cijena = put.cijena * 0.95
 WHERE (put.sifTrgovina, put.sifProizvod) IN (
     SELECT d.sifTrgovina, d.sifProizvod
@@ -494,6 +442,22 @@ WHERE (put.sifTrgovina, put.sifProizvod) IN (
     HAVING COUNT(*) > 3
 );
 ```
+Drugi nacin:
+
+```mySQL
+UPDATE proizvodUTrgovini put
+SET put.cijena = put.cijena * 0.95
+WHERE EXISTS (
+    SELECT 1
+    FROM dnevnik d
+    WHERE d.sifTrgovina = put.sifTrgovina
+      AND d.sifProizvod = put.sifProizvod
+      AND d.datum >= CURDATE() - INTERVAL 45 DAY
+    GROUP BY d.sifTrgovina, d.sifProizvod
+    HAVING COUNT(*) > 3
+);
+```
+
 
 b) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina) 
 napuniti podacima o proizvodima u trgovinama i pripadnim mjesecima i godinama
@@ -569,12 +533,15 @@ b) Svim provjerama koje ne odrzavaju nosioci na predmetu produziti trajanje
 za 20% (2b)
 
 ```SQL
-UPDATE PROVJERA pv
-JOIN PREDAJE pr 
-  ON pr.sifPred = pv.sifPred
- AND pr.sifNast = pv.sifNast
-SET pv.trajanje = pv.trajanje * 1.2
-WHERE pr.nosilac = 0;
+UPDATE PROVJERA p
+SET p.trajanje = p.trajanje * 1.2
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM PREDAJE pr
+    WHERE pr.sifPred = p.sifPred
+      AND pr.sifNast = p.sifNast
+      AND pr.nosilac <> 0   -- ili <> 'N'
+);
 ```
 Drugi nacin:
 
@@ -590,6 +557,17 @@ WHERE (sifPred, sifNast) IN (
 ```
 c) Obrisati sve podatke o provjerama na koje je prijavljeno manje od 5 
 studenata (2b)
+
+```SQL
+DELETE FROM PROVJERA
+WHERE (datProvjera, sifPred) IN (
+    SELECT datProvjera, sifPred
+    FROM PRIJAVA
+    GROUP BY datProvjera, sifPred
+    HAVING COUNT(*) < 5
+);
+```
+Drugi nacin:
 
 ```SQL
 DELETE FROM PROVJERA
@@ -715,23 +693,21 @@ su u skolu koja ima najmanje anktetiranih ucenika. Ovu promjenu potrebno je
 evidentirati u bazi podataka (3b)
 
 ```SQL
-UPDATE UCENIK u
-SET u.sifSkola = (
-    SELECT sMin.sifSkola
-    FROM (
-        SELECT s2.sifSkola, COUNT(*) AS br_ucenika
-        FROM UCENIK u2
-        JOIN SKOLA s2 ON s2.sifSkola = u2.sifSkola
-        GROUP BY s2.sifSkola
-        ORDER BY br_ucenika ASC
-        LIMIT 1
-    ) AS sMin
+UPDATE UCENIK
+SET sifSkola = (
+    SELECT u.sifSkola
+    FROM UCENIK u
+    GROUP BY u.sifSkola
+    HAVING COUNT(*) <= ALL (
+        SELECT COUNT(*)
+        FROM UCENIK
+        GROUP BY sifSkola
+    )
 )
-WHERE u.sifSkola = (
-    SELECT s1.sifSkola
-    FROM SKOLA s1
-    WHERE s1.nazSkola = 'Prva opsta gimnazija'
-    LIMIT 1
+WHERE sifSkola = (
+    SELECT sifSkola
+    FROM SKOLA
+    WHERE nazSkola = 'Prva opsta gimnazija'
 );
 ```
 Drugi nacin:
