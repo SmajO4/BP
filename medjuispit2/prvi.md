@@ -34,7 +34,7 @@ SELECT
 FROM dnevnik d
 JOIN proizvod p      ON d.sifProizvod  = p.sifProizvod
 JOIN trgovina t      ON d.sifTrgovina  = t.sifTrgovina
-WHERE d.datum >= CURDATE() - INTERVAL 45 DAY
+WHERE d.datum >= CURDATE() - DATE_SUB(curdate(), INTERVAL 45 DAY)
 GROUP BY 
     p.sifProizvod,
     t.sifTrgovina,
@@ -50,30 +50,28 @@ b) Proizvodima u trgovinama cija cijena nije mijenjana u proteklih mjesec
 dana smanjiti cijenu za 10% (2b)
 
 ```SQL
-UPDATE proizvodUTrgovini put
-JOIN dnevnik d 
-  ON  d.sifTrgovina = put.sifTrgovina
-  AND d.sifProizvod = put.sifProizvod
-GROUP BY 
-    put.sifTrgovina,
-    put.sifProizvod
-HAVING MAX(d.datum) < CURDATE() - INTERVAL 1 MONTH
-   OR MAX(d.datum) IS NULL
-SET put.cijena = put.cijena * 0.9;
-```
-Drugi nacin:
-```SQL
-UPDATE proizvodUTrgovini
+UPDATE proizvodUTrgovini pu
 SET cijena = cijena * 0.9
-WHERE (sifTrgovina, sifProizvod) IN (
-    SELECT sifTrgovina, sifProizvod
-    FROM dnevnik
-    WHERE datum >= CURDATE() - INTERVAL 45 DAY
-    GROUP BY sifTrgovina, sifProizvod
-    HAVING COUNT(*) > 3
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dnevnik d
+    WHERE d.sifTrgovina = pu.sifTrgovina
+      AND d.sifProizvod = pu.sifProizvod
+      AND d.datum >= DATE_SUB(curdate(), INTERVAL 1 MONTH)
 );
 ```
 
+```SQL
+UPDATE proizvodUTrgovini pu
+LEFT JOIN dnevnik d
+  ON pu.sifTrgovina = d.sifTrgovina
+  AND pu.sifProizvod = d.sifProizvod
+  AND d.datum >= DATE_SUB(curdate(), INTERVAL 1 MONTH)
+SET pu.cijena = pu.cijena * 0.9
+WHERE d.sifTrgovina IS NULL;
+-- ILI 
+-- WHERE d.sifProizvod IS NULL;
+```
 c) Postojecu relaciju IZMJENE (sifTrgovina, sifProizvod, mjesec, godina,
 brIzmjena) napuniti podacima o svim proizvodima u trgovinama i pripadnim
 mjesecima i godinama u kojima je vise od pet puta tokom doticnog mjeseca 
