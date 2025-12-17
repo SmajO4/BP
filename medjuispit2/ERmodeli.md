@@ -87,6 +87,9 @@ koji kandidat moze osvojiti i minimalan broj bodova za prolaz.
 Za svaki zadatak se evidentira redni broj na testu i koliko bodova nosi, a 
 jedan zadatak se moze pojaviti na vise razlicitih testova.
 Predmetu su opisani sifrom i nazivom.
+Za svakog kandidata evidentiraju se odgovori (ozn odgovora) na svaki zadatak 
+koji  dao na testu.
+
 
 ---
 
@@ -134,7 +137,7 @@ Za svakog zaposlenika evidentira se JMBG, ime i prezime.
 
 ---
 
-> 12.12.2014.
+> 12.12.2014. A
 
 1.) U bazi podataka evidentiraju se podaci o nastavi i prisustovanju studenata
 nastavi.
@@ -162,6 +165,29 @@ Za nastavnike se evidentira sifra, ime i prezime i organizacijska jedinica u
 kojoj su zaposleni. Svaka organizacijska jedinica ima sifru i naziv, ima 
 najvise jednu nadredjenu organizacijsku jedinicu, a moze imati vise poredjenih
 organizacijskih jedinica.
+
+---
+
+> 2021
+
+U bazi podataka pohranjuju se podaci o odrzavanju i rezultatima utrke formule1.
+Evidentiraju se podaci o timovima i pilotima koji nastupaju za timove.
+Za timove se evidentira sifra koja ga jednoznacno identificira, naziv tim,
+drzava kojoj tim pripada i direktor tima (prvi vozac, drugi vozac, testni
+vozac...)
+Uloge imaju svoje sifre i nazive, a u svakom timu jedan pilot moze obavljati
+samo jednu ulogu te jednu ulogu moze obavljati samo jedan pilot.
+Piloti i direktori timova su osobe za koje se evidentira sifra koja ih 
+jednoznacno identificira, ime, prezime i drzava iz koje dolaze.
+Pored toga, za direktora se evidentira datum od kada je direktor, a za 
+pilote se evidentira ukupan broj pobjeda i godina od koje se takmici.
+Drzave su opisane oznakom drzave i nazivom.
+Utrke se odrzavaju na stazama za koje se evidentira sifra, naziv i rekord 
+staze te drzave u kojoj se staza nalazi. Jednog dana se moze odrzavati samo
+jedna utrka formule 1, a osim datuma evidentira se i naziv utrke te staza na 
+kojoj se odrzava. Na svakoj utrci se evidentira koji pilot je osvojio 
+koju poziciju. Svaka pozicija nosi tacan broj bodova koji se ne mijenja 
+(pozicija 1 -> 12b, pozicija 2 -> 10b...)
 
 
 
