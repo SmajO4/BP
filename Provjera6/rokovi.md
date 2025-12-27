@@ -13,7 +13,7 @@ a - na kraju procedure, ispred naredbe END//
 b - na pocetku procedure, ispred prve izvrsene naredbe,
 c - u zasebnom bloku (BEGIN...END)
 
-```mysel
+```MySQL
 -- unutar tijela procedure --
 
 DECLARE kod CHAR(5);
