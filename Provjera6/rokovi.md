@@ -13,23 +13,36 @@ a - na kraju procedure, ispred naredbe END//
 b - na pocetku procedure, ispred prve izvrsene naredbe,
 c - u zasebnom bloku (BEGIN...END)
 
-```SQL
+```mysel
+-- unutar tijela procedure --
 
+DECLARE kod CHAR(5);
+DECLARE poruka TEXT;
+
+DECLARE CONTINUE HANDLER FOR SQLEXECPTION
+BEGIN 
+    GET DIAGNOSTICS CONDITION 1 
+    kod = RETURNED_SQLSTATE,
+    poruka = MESSAGE_TEXT;
+END;
+
+-- unutar tijela procedure --
 ```
 2. Napisati opsti oblik deklaracije handelra koji ce u nekoj pohranjenoj
 proceduri obradjivati greske broj: 1142, 1143, 1162, 1163 i 1167.
-Nakon obrade greske izvxrsavanje programa treba da nastavi izvan bloka 
+Nakon obrade greske izvrsavanje programa treba da nastavi izvan bloka 
 u kojem je deklarisan handler.
 
-```SQL
-
+```mysel
+DECLARE EXIT HANDLER FOR 1142, 1143, 1162, 1163, 1167 BEGIN END;
 ```
 
 3. Napisati SQL naredbu kojom ce simulirati pojavu greske ciji je SQLSTATE
 kod 45000 i opis "Simulacija aktiviranja greske".
 
-```SQL
-
+```mysel
+SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = "Simulacija aktiviranja greske"
 ```
 
 4. Napisati SQL naredbe kojima se korisniku huso:
@@ -39,8 +52,20 @@ iz relacije stud
 - omogucava pregled i brisanje samo onih studenata iz relacije stud koji 
 su rodjeni u mjestu sa postanskim brojem 10000.
 
-```SQL
+```mysel
+-- -----------------------------
+REVOKE ALL PRIVILEGES ON db.stud FROM 'huso'@'%';
 
+-- -----------------------------
+GRANT SELECT (imeStud, prezStud) 
+ON db.stud TO 'huso'@'%';
+
+-- -----------------------------
+CREATE VIEW stud_10000 AS 
+SELECT * FROM stud 
+WHERE pbrRod = 10000;
+
+GRANT SELECT, DELETE ON db.stud_10000 TO 'huso'@'%';
 ```
 ---
 
@@ -61,8 +86,10 @@ b - neposredno iza END naredbe kojom zavrsava eksplicitni blok naredbi
 
 c - neposredno iza BEGIN naredbi kojom pocinje eksplicitni blok
 
-```SQL
-
+```mysel
+BEGIN 
+    DECLARE EXIT HANDLER FOR 1142, 1143, 1162, 1163, 1167 BEGIN END;
+END;
 ```
 
 2. Napisati deklaraciju handler-a za obradu svih gresaka u nekoj 
@@ -71,15 +98,24 @@ kodu greske i opisu aktivirane greske u lokalne varijable kod i poruka.
 Nakon obrade greske procedure treba da nastavi sa radom iza nadedbe koja 
 je izazvala gresku.
 
-```SQL
+```mysel
+DECLARE kod CHAR(5);
+DECLARE poruka TEXT;
 
+DECLARE CONTINUE HANDLER FOR SQLEXECPTION
+BEGIN
+    GET DIAGNOSTICS CONDITION 1 
+        kod = RETURNED_SQLSTATE,
+        poruka = MESSAGE_TEXT;
+END;
 ```
 
 3. Napisati SQL naredbu kojom ce simulirati pojavu greske ciji je SQLSTATE
 kod 45000 i opis "Korisnicki izazvana greska".
 
-```SQL
-
+```mysel
+SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Korisnicki izazvana greska.'
 ```
 
 4. Napisati SQL naredbe kojima se korisniku huso:
@@ -88,6 +124,10 @@ kod 45000 i opis "Korisnicki izazvana greska".
 iz relacije pred.
 - omoguciti pregled i brisanje samo onih predmeta iz relacije pred koji 
 pripadaju organizacijskog jedini sa sifrom 10001.
+
+```mysel
+
+```
 
 ## ROK 13a
 
