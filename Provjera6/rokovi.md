@@ -33,7 +33,7 @@ proceduri obradjivati greske broj: 1142, 1143, 1162, 1163 i 1167.
 Nakon obrade greske izvrsavanje programa treba da nastavi izvan bloka 
 u kojem je deklarisan handler.
 
-```mysel
+```SQL
 DECLARE EXIT HANDLER FOR 1142, 1143, 1162, 1163, 1167 BEGIN END;
 ```
 
